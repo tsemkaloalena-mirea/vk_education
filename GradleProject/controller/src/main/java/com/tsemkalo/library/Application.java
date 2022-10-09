@@ -17,6 +17,6 @@ public class Application {
 		Library library = libraryFactory.createLibrary();
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 
-		System.out.println(gson.toJson(library.getBooksByAuthorName("Dina Rubina")));
+		System.out.println(gson.toJson(library.getBooksByAuthorName(args[0])));
 	}
 }
