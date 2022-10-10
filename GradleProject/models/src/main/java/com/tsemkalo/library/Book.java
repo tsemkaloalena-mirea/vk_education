@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter // TODO dependencies
+@Getter
 @Setter
 public class Book extends AbstractEntity {
 	private String title;
