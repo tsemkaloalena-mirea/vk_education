@@ -24,12 +24,11 @@ public class BookDeserializer implements JsonDeserializer<Book> {
 	public Book deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) {
 		JsonObject jsonObject = json.getAsJsonObject();
 		JsonElement authorId = jsonObject.get("authorId");
-		Book book = new Book();
+		Book book = new Book(jsonObject.get("title").getAsString(),
+				library.getAuthorById(authorId.getAsLong()),
+				jsonObject.get("language").getAsString(),
+				LocalDate.parse(jsonObject.get("creationDate").getAsString(), formatter.withLocale(Locale.ENGLISH)));
 		book.setId(jsonObject.get("id").getAsLong());
-		book.setTitle(jsonObject.get("title").getAsString());
-		book.setAuthor(library.getAuthorById(authorId.getAsLong()));
-		book.setLanguage(jsonObject.get("language").getAsString());
-		book.setCreationDate(LocalDate.parse(jsonObject.get("creationDate").getAsString(), formatter.withLocale(Locale.ENGLISH)));
 		return book;
 	}
 }

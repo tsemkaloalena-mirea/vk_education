@@ -1,12 +1,14 @@
 package com.tsemkalo.library;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
+@AllArgsConstructor
 public class Book extends AbstractEntity {
 	private String title;
 	private Author author;
