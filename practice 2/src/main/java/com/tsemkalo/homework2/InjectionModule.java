@@ -12,15 +12,9 @@ public final class InjectionModule extends AbstractModule {
     @Override
     protected void configure() {
         switch (args[0]) {
-            case "console":
-                bind(Logging.class).toInstance(new ConsoleLogging(args[1]));
-                break;
-            case "file":
-                bind(Logging.class).toInstance(new FileLogging(args[1]));
-                break;
-            case "composite":
-                bind(Logging.class).toInstance(new CompositeLogging(args[1]));
-                break;
+            case "console" -> bind(Logging.class).toInstance(new ConsoleLogging(args[1]));
+            case "file" -> bind(Logging.class).toInstance(new FileLogging(args[1]));
+            case "composite" -> bind(Logging.class).toInstance(new CompositeLogging(args[1]));
         }
     }
 }
