@@ -11,8 +11,6 @@ repositories {
 
 dependencies {
     implementation("com.intellij:annotations:12.0")
-    implementation("org.slf4j:slf4j-api:2.0.3")
-    implementation("org.slf4j:slf4j-reload4j:2.0.3")
     implementation("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.24")
     implementation("com.google.inject:guice:5.1.0")
