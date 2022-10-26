@@ -18,6 +18,9 @@ public final class LibraryInjectionTest {
     @Inject
     private LibraryFactory libraryFactory;
 
+    @Inject
+    private BookFactory bookFactory;
+
     @BeforeEach
     public void init() throws URISyntaxException {
         Path filePath = Paths.get(this.getClass().getResource("/books.json").toURI());
@@ -28,6 +31,6 @@ public final class LibraryInjectionTest {
     @Test
     public void capacityIsLessThenAmountOFBooksThenThrowException() {
         assertNotNull(libraryFactory);
-        assertThrows(NoFreeCellsException.class, () -> new Library(6, libraryFactory));
+        assertThrows(NoFreeCellsException.class, () -> new Library(6, bookFactory));
     }
 }

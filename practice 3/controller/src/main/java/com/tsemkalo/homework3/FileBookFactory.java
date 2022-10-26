@@ -11,14 +11,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public final class FileLibraryFactory implements LibraryFactory {
+public final class FileBookFactory implements BookFactory {
     @NotNull
     private static final Type listBooksType = new TypeToken<ArrayList<Book>>() {
     }.getType();
     @NotNull
     private final String fileName;
 
-    public FileLibraryFactory(@NotNull String fileName) {
+    public FileBookFactory(@NotNull String fileName) {
         this.fileName = fileName;
     }
 
@@ -30,10 +30,5 @@ public final class FileLibraryFactory implements LibraryFactory {
         } catch (FileNotFoundException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    @Override
-    public Library library(Integer capacity) {
-        return new Library(capacity, this);
     }
 }

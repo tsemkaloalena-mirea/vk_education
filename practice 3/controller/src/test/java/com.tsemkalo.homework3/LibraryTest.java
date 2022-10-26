@@ -23,15 +23,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 public final class LibraryTest extends AbstractTest {
     @Mock
-    private FileLibraryFactory fileLibraryFactory;
+    private LibraryFactoryImpl libraryFactoryImpl;
+
+    @Mock
+    private FileBookFactory fileBookFactory;
 
 //    @InjectMocks
     private Library library;
 
     @BeforeEach
     public void init() {
-        Mockito.when(fileLibraryFactory.books()).thenReturn(getBookCollection());
-        library = new Library(20, fileLibraryFactory);
+        Mockito.when(fileBookFactory.books()).thenReturn(getBookCollection());
+        library = new Library(20, fileBookFactory);
     }
 
     @Test

@@ -11,6 +11,7 @@ public final class InjectionModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(LibraryFactory.class).toInstance(new FileLibraryFactory(filePath));
+        bind(BookFactory.class).toInstance(new FileBookFactory(filePath));
+        bind(LibraryFactory.class).to(LibraryFactoryImpl.class);
     }
 }

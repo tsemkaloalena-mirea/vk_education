@@ -2,6 +2,9 @@ package com.tsemkalo.homework3;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.tsemkalo.homework3.exceptions.BookNotFoundException;
 import com.tsemkalo.homework3.exceptions.NoFreeCellsException;
 import lombok.Getter;
@@ -12,13 +15,14 @@ import java.util.Map;
 
 public final class Library {
     private final Integer capacity;
+
     @Getter
     private final Map<Integer, Book> books = new HashMap<>();
 
-    public Library(Integer capacity, LibraryFactory libraryFactory) {
+    public Library(Integer capacity, BookFactory bookFactory) {
         this.capacity = capacity;
         int cellNumber = 0;
-        Collection<Book> givenBooks = libraryFactory.books();
+        Collection<Book> givenBooks = bookFactory.books();
         if (givenBooks.size() > capacity) {
             throw new NoFreeCellsException(capacity);
         }
