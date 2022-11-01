@@ -1,14 +1,15 @@
 CREATE TABLE users (
-id SERIAL PRIMARY KEY NOT NULL,
+id SERIAL NOT NULL,
 username varchar(64) NOT NULL,
 password varchar(64) NOT NULL,
 name varchar(64) NOT NULL,
 surname varchar(64) NOT NULL,
-email varchar(64) NOT NULL
+email varchar(64) NOT NULL,
+CONSTRAINT users_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE courses (
-id SERIAL PRIMARY KEY NOT NULL,
+id SERIAL NOT NULL,
 theme varchar(64) NOT NULL,
 subject varchar(64) NOT NULL,
 status varchar(64) NOT NULL,
@@ -19,11 +20,12 @@ cost int,
 start_date timestamp,
 finish_date timestamp,
 description varchar(1024) NOT NULL,
-average_rating float
+average_rating float,
+CONSTRAINT courses_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE lessons (
-id SERIAL PRIMARY KEY NOT NULL,
+id SERIAL NOT NULL,
 theme varchar(64) NOT NULL,
 subject varchar(64) NOT NULL,
 teacher_id bigint REFERENCES users(id),
@@ -37,20 +39,23 @@ duration int,
 lesson_date timestamp NOT NULL,
 fixed_salary int,
 unfixed_salary int,
-average_rating float
+average_rating float,
+CONSTRAINT lessons_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE subscriptions (
-id SERIAL PRIMARY KEY NOT NULL,
+id SERIAL NOT NULL,
 student_id bigint REFERENCES users(id),
-lesson_id bigint REFERENCES lessons(id)
+lesson_id bigint REFERENCES lessons(id),
+CONSTRAINT subscriptions_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE reviews (
-id SERIAL PRIMARY KEY NOT NULL,
+id SERIAL NOT NULL,
 rating int NOT NULL,
 text varchar(1024),
 user_id bigint REFERENCES users(id),
 lesson_id bigint REFERENCES lessons(id),
-course_id bigint REFERENCES courses(id)
+course_id bigint REFERENCES courses(id),
+CONSTRAINT reviews_pk PRIMARY KEY (id)
 );
