@@ -45,8 +45,8 @@ CONSTRAINT lessons_pk PRIMARY KEY (id)
 
 CREATE TABLE subscriptions (
 id SERIAL NOT NULL,
-student_id bigint REFERENCES users(id),
-lesson_id bigint REFERENCES lessons(id),
+student_id bigint REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+lesson_id bigint REFERENCES lessons(id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT subscriptions_pk PRIMARY KEY (id)
 );
 
@@ -54,8 +54,8 @@ CREATE TABLE reviews (
 id SERIAL NOT NULL,
 rating int NOT NULL,
 text varchar(1024),
-user_id bigint REFERENCES users(id),
-lesson_id bigint REFERENCES lessons(id),
-course_id bigint REFERENCES courses(id),
+user_id bigint REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+lesson_id bigint REFERENCES lessons(id) ON UPDATE CASCADE ON DELETE CASCADE,
+course_id bigint REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT reviews_pk PRIMARY KEY (id)
 );
