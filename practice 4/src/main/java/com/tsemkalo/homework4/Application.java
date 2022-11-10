@@ -8,10 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 public final class Application {
     public static void main(String[] args) {
         if (args.length == 0) {
-            log.debug("Name for property file is not set");
-            return;
+            log.error("Name for property file is not set");
+            System.exit(-1);
         }
-        Injector injector = Guice.createInjector(new BasicModule(args[0]));
+        Injector injector = Guice.createInjector(new BasicModule("/" + args[0]));
         DBInitializer dbInitializer = injector.getInstance(DBInitializer.class);
         dbInitializer.runMigration();
     }

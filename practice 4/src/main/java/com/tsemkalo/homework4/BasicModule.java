@@ -33,7 +33,8 @@ public final class BasicModule extends AbstractModule {
             Names.bindProperties(binder(), properties);
             fileInputStream.close();
         } catch (IOException | URISyntaxException exception) {
-            log.debug(Arrays.toString(exception.getStackTrace()));
+            log.error(Arrays.toString(exception.getStackTrace()));
+            System.exit(-1);
         }
     }
 }

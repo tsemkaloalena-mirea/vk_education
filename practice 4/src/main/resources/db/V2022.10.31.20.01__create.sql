@@ -15,7 +15,7 @@ subject varchar(64) NOT NULL,
 status varchar(64) NOT NULL,
 online varchar(64) NOT NULL,
 address varchar(64),
-teacher_id bigint REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+teacher_id SERIAL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
 cost int,
 start_date timestamp,
 finish_date timestamp,
@@ -28,7 +28,7 @@ CREATE TABLE lessons (
 id SERIAL NOT NULL,
 theme varchar(64) NOT NULL,
 subject varchar(64) NOT NULL,
-teacher_id bigint REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+teacher_id SERIAL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
 course_id bigint REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE,
 status varchar(64) NOT NULL,
 address varchar(64),
@@ -45,8 +45,8 @@ CONSTRAINT lessons_pk PRIMARY KEY (id)
 
 CREATE TABLE subscriptions (
 id SERIAL NOT NULL,
-student_id bigint REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
-lesson_id bigint REFERENCES lessons(id) ON UPDATE CASCADE ON DELETE CASCADE,
+student_id SERIAL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+lesson_id SERIAL REFERENCES lessons(id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT subscriptions_pk PRIMARY KEY (id)
 );
 
@@ -54,7 +54,7 @@ CREATE TABLE reviews (
 id SERIAL NOT NULL,
 rating int NOT NULL,
 text varchar(1024),
-user_id bigint REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+user_id SERIAL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
 lesson_id bigint REFERENCES lessons(id) ON UPDATE CASCADE ON DELETE CASCADE,
 course_id bigint REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT reviews_pk PRIMARY KEY (id)
