@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ProductDAO extends AbstractDAO<Product> {
-    @NotNull private final Connection connection;
+    @NotNull
+    private final Connection connection;
 
     @Inject
     public ProductDAO(@NotNull Connection connection) {

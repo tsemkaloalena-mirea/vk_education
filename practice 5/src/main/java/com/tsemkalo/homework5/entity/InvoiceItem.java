@@ -11,7 +11,6 @@ public final class InvoiceItem extends AbstractEntity {
     private final Product product;
     private final Integer amount;
     private final Long invoiceId;
-//    private final Invoice invoice;
 
     @Override
     public Long getUniqueKey() {

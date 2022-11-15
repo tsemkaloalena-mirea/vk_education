@@ -32,9 +32,6 @@ public class InvoiceItemDAOTest {
     @NotNull
     private ProductDAO productDAO;
 
-    @NotNull
-    private InvoiceDAO invoiceDAO;
-
     @BeforeEach
     public void init() {
         DBInitializer.initDb(CREDENTIALS);
@@ -42,7 +39,6 @@ public class InvoiceItemDAOTest {
             Connection connection = DriverManager.getConnection(CREDENTIALS.url(), CREDENTIALS.login(), CREDENTIALS.password());
             this.invoiceItemDAO = new InvoiceItemDAO(connection);
             this.productDAO = new ProductDAO(connection);
-            this.invoiceDAO = new InvoiceDAO(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
             System.exit(1);

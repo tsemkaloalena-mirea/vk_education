@@ -2,7 +2,6 @@ package com.tsemkalo.homework5.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.checkerframework.checker.units.qual.A;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

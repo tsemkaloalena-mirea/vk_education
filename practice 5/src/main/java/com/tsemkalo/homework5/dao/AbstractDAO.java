@@ -16,11 +16,11 @@ import java.util.List;
 public abstract class AbstractDAO<T extends AbstractEntity> {
     @NotNull
     private final Connection connection;
-    
+
     @Getter
     @NotNull
     private final String uniqueKeyName;
-    
+
     @Getter
     @NotNull
     private final String tableName;

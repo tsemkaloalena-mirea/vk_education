@@ -26,15 +26,12 @@ public final class Application {
 
             final InvoiceDAO invoiceDao = new InvoiceDAO(connection);
 
-//            System.out.println(organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(12));
+//            organisationDAO.getOrganisationsSortedByProductsAmount().forEach(System.out::println);
+//            organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(12).forEach(System.out::println);
+//            organisationDAO.getOrganisationProductsForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2021-05-24")).forEach(System.out::println);
+//            productDAO.getProductsTotalForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2022-03-04")).forEach(System.out::println);
+//            productDAO.getProductsAverageCostForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2022-03-04")).forEach(System.out::println);
 
-//            productDAO.save(new Product("pr1"));
-//            productDAO.update(new Product(2L, "prr2"));
-            invoiceDao.all().forEach(System.out::println);
-//            System.out.println(productDAO.get(1L));
-//            final var invoiceDao = new InvoiceDAO(connection);
-//            invoiceDao.save(new Invoice(LocalDateTime.of(2022, 11, 10, 17, 21), 2554L));
-//            invoiceDao.all().forEach(System.out::println);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

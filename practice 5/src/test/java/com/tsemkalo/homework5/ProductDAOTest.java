@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -189,7 +188,7 @@ public class ProductDAOTest {
         for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
             LocalDate date = invoiceDAO.get(invoiceItem.getInvoiceId()).getInvoiceDate();
             if (date.isEqual(fromDate) || date.isEqual(toDate) || date.isAfter(fromDate) && date.isBefore(toDate))
-            expectedTotal += invoiceItem.getAmount() * invoiceItem.getCost();
+                expectedTotal += invoiceItem.getAmount() * invoiceItem.getCost();
         }
 
         List<JsonObject> objects = productDAO.getProductsTotalForPeriod(fromDate, toDate);
