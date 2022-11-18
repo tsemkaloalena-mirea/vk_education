@@ -14,15 +14,15 @@ CREATE TABLE organisation (
 CREATE TABLE invoice (
     id bigserial NOT NULL,
     invoice_date date NOT NULL,
-    organisation_tin bigserial REFERENCES organisation(tin) ON UPDATE CASCADE ON DELETE CASCADE,
+    organisation_tin bigint NOT NULL REFERENCES organisation(tin) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT invoice_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE invoice_item (
     id bigserial NOT NULL,
     cost int NOT NULL,
-    product_id bigserial REFERENCES product(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    product_id bigint NOT NULL REFERENCES product(id) ON UPDATE CASCADE ON DELETE CASCADE,
     amount int NOT NULL,
-    invoice_id bigserial REFERENCES invoice(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    invoice_id bigint NOT NULL REFERENCES invoice(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT invoice_item_pk PRIMARY KEY (id)
 );
