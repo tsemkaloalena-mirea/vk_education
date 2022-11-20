@@ -10,16 +10,13 @@ import java.util.List;
 import static generated.Tables.INVOICE_ITEM;
 
 public final class InvoiceItemDAO extends AbstractDAO<InvoiceItemRecord> {
-    @NotNull
-    private final DSLContext context;
 
     public InvoiceItemDAO(@NotNull DSLContext context) {
         super(context, INVOICE_ITEM, INVOICE_ITEM.ID);
-        this.context = context;
     }
 
     public List<InvoiceItemRecord> getInvoiceItemsByInvoiceId(Long invoiceId) {
-        Result<InvoiceItemRecord> result = context
+        Result<InvoiceItemRecord> result = getContext()
                 .selectFrom(INVOICE_ITEM)
                 .where(INVOICE_ITEM.INVOICE_ID.eq(invoiceId))
                 .fetch();

@@ -205,8 +205,8 @@ public class OrganisationDAOTest {
             itemsAmount += invoiceItem.getAmount();
             correctOrganizations.put(organisationTIN, itemsAmount);
         }
-        correctOrganizations = correctOrganizations.entrySet().stream().
-                sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
+        correctOrganizations = correctOrganizations.entrySet().stream()
+                .sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
                 .limit(10)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
@@ -222,19 +222,22 @@ public class OrganisationDAOTest {
 
     @Test
     public void getOrganisationRecordsWithProductsAmountMoreThenGiven() {
-        int n = 12;
+        int n = 5;
+        Long productId = 7L;
         Map<Long, Integer> correctOrganizations = new HashMap<>();
         for (InvoiceItemRecord invoiceItem : invoiceItemDAO.all()) {
-            Long organisationTIN = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisationTin();
-            Integer itemsAmount = 0;
-            if (correctOrganizations.containsKey(organisationTIN)) {
-                itemsAmount = correctOrganizations.get(organisationTIN);
+            if (productId.equals(invoiceItem.getProductId())) {
+                Long organisationTIN = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisationTin();
+                Integer itemsAmount = 0;
+                if (correctOrganizations.containsKey(organisationTIN)) {
+                    itemsAmount = correctOrganizations.get(organisationTIN);
+                }
+                itemsAmount += invoiceItem.getAmount();
+                correctOrganizations.put(organisationTIN, itemsAmount);
             }
-            itemsAmount += invoiceItem.getAmount();
-            correctOrganizations.put(organisationTIN, itemsAmount);
         }
 
-        List<Long> organisationTINs = organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(n)
+        List<Long> organisationTINs = organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(n, productId)
                 .stream().map(OrganisationRecord::getTin).collect(Collectors.toList());
 
         int size = 0;

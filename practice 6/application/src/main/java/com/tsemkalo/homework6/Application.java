@@ -58,8 +58,8 @@ public final class Application {
 //            }
 
 //            organisationDAO.getOrganisationsSortedByProductsAmount().forEach(System.out::println);
-//            organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(12).forEach(System.out::println);
-            organisationDAO.getOrganisationProductsForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2021-05-24")).forEach(System.out::println);
+//            organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(5, 7L).forEach(System.out::println);
+//            organisationDAO.getOrganisationProductsForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2021-05-24")).forEach(System.out::println);
 //            productDAO.getProductsTotalForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2022-03-04")).forEach(System.out::println);
 //            productDAO.getProductsAverageCostForPeriod(LocalDate.parse("2021-04-04"), LocalDate.parse("2022-03-04")).forEach(System.out::println);
 

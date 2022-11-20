@@ -1,25 +1,36 @@
 package com.tsemkalo.homework6;
 
+import generated.tables.records.InvoiceItemRecord;
+import generated.tables.records.InvoiceRecord;
 import generated.tables.records.ProductRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Record5;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static generated.Tables.INVOICE;
+import static generated.Tables.INVOICE_ITEM;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProductDAOTest {
     @NotNull
@@ -187,53 +198,55 @@ public class ProductDAOTest {
         assertEquals(newSize, oldSize);
     }
 
-//    @Test
-//    public void getProductsTotalForPeriod() {
-//        LocalDate fromDate = LocalDate.parse("2021-04-04");
-//        LocalDate toDate = LocalDate.parse("2022-03-04");
-//        int expectedTotal = 0;
-//        for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
-//            LocalDate date = invoiceDAO.get(invoiceItem.getInvoiceId()).getInvoiceDate();
-//            if (date.isEqual(fromDate) || date.isEqual(toDate) || date.isAfter(fromDate) && date.isBefore(toDate))
-//                expectedTotal += invoiceItem.getAmount() * invoiceItem.getCost();
-//        }
-//
-//        List<JsonObject> objects = productDAO.getProductsTotalForPeriod(fromDate, toDate);
-//        assertNotNull(objects);
-//
-//        int total = 0;
-//        for (JsonObject object : objects) {
-//            LocalDate invoiceDate = LocalDate.parse(object.get("invoiceDate").getAsString());
-//            assertTrue(invoiceDate.isEqual(fromDate) || invoiceDate.isAfter(fromDate));
-//            assertTrue(invoiceDate.isEqual(toDate) || invoiceDate.isBefore(toDate));
-//            total += object.get("total").getAsInt();
-//        }
-//        assertEquals(expectedTotal, total);
-//    }
+    @Test
+    public void getProductsTotalForPeriod() {
+        LocalDate fromDate = LocalDate.parse("2021-04-04");
+        LocalDate toDate = LocalDate.parse("2022-03-04");
+        int expectedTotal = 0;
+        for (InvoiceItemRecord invoiceItem : invoiceItemDAO.all()) {
+            LocalDate date = invoiceDAO.get(invoiceItem.getInvoiceId()).getInvoiceDate();
+            if (date.isEqual(fromDate) || date.isEqual(toDate) || date.isAfter(fromDate) && date.isBefore(toDate))
+                expectedTotal += invoiceItem.getAmount() * invoiceItem.getCost();
+        }
 
-//    @Test
-//    public void getProductsAverageCostForPeriod() {
-//        LocalDate fromDate = LocalDate.parse("2021-04-04");
-//        LocalDate toDate = LocalDate.parse("2022-03-04");
-//        List<JsonObject> products = productDAO.getProductsAverageCostForPeriod(fromDate, toDate);
-//        Map<Long, List<Integer>> averageCosts = new HashMap<>();
-//
-//        for (Invoice invoice : invoiceDAO.all()) {
-//            if (invoice.getInvoiceDate().isEqual(fromDate) || invoice.getInvoiceDate().isEqual(toDate) || invoice.getInvoiceDate().isAfter(fromDate) && invoice.getInvoiceDate().isBefore(toDate)) {
-//                for (InvoiceItem invoiceItem : invoice.getItems()) {
-//                    if (!averageCosts.containsKey(invoiceItem.getProduct().getId())) {
-//                        averageCosts.put(invoiceItem.getProduct().getId(), new ArrayList<>());
-//                    }
-//                    averageCosts.get(invoiceItem.getProduct().getId()).add(invoiceItem.getCost());
-//                }
-//            }
-//        }
-//
-//        for (JsonObject object : products) {
-//            Long productId = object.get("product_id").getAsLong();
-//            Double expectedAvg = averageCosts.get(productId).stream().mapToDouble(Integer::intValue).sum();
-//            expectedAvg /= averageCosts.get(productId).size();
-//            Assertions.assertEquals(expectedAvg, object.get("average_cost").getAsDouble());
-//        }
-//    }
+        List<Record5<LocalDate, Long, BigDecimal, BigDecimal, BigDecimal>> records = productDAO.getProductsTotalForPeriod(fromDate, toDate);
+        assertNotNull(records);
+
+        Integer total = 0;
+        for (Record5<LocalDate, Long, BigDecimal, BigDecimal, BigDecimal> record : records) {
+            LocalDate invoiceDate = record.get(INVOICE.INVOICE_DATE);
+            assertTrue(invoiceDate.isEqual(fromDate) || invoiceDate.isAfter(fromDate));
+            assertTrue(invoiceDate.isEqual(toDate) || invoiceDate.isBefore(toDate));
+            total += Integer.parseInt(record.get("total").toString());
+        }
+        assertEquals(expectedTotal, total);
+    }
+
+    @Test
+    public void getProductsAverageCostForPeriod() {
+        LocalDate fromDate = LocalDate.parse("2021-04-04");
+        LocalDate toDate = LocalDate.parse("2022-03-04");
+        List<Record2<Long, BigDecimal>> products = productDAO.getProductsAverageCostForPeriod(fromDate, toDate);
+        Map<Long, List<Integer>> averageCosts = new HashMap<>();
+
+        for (InvoiceRecord invoice : invoiceDAO.all()) {
+            if (invoice.getInvoiceDate().isEqual(fromDate) || invoice.getInvoiceDate().isEqual(toDate) || invoice.getInvoiceDate().isAfter(fromDate) && invoice.getInvoiceDate().isBefore(toDate)) {
+                for (InvoiceItemRecord invoiceItem : invoiceItemDAO.getInvoiceItemsByInvoiceId(invoice.getId())) {
+                    if (!averageCosts.containsKey(invoiceItem.getProductId())) {
+                        averageCosts.put(invoiceItem.getProductId(), new ArrayList<>());
+                    }
+                    for (int i = 0; i < invoiceItem.getAmount(); i++) {
+                        averageCosts.get(invoiceItem.getProductId()).add(invoiceItem.getCost());
+                    }
+                }
+            }
+        }
+
+        for (Record2<Long, BigDecimal> record : products) {
+            Long productId = record.get(INVOICE_ITEM.PRODUCT_ID);
+            Double expectedAvg = averageCosts.get(productId).stream().mapToDouble(Integer::intValue).sum();
+            expectedAvg /= averageCosts.get(productId).size();
+            assertEquals(expectedAvg, Double.parseDouble(record.get("average_cost").toString()));
+        }
+    }
 }

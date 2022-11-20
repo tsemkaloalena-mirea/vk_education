@@ -9,16 +9,15 @@ import org.jooq.impl.UpdatableRecordImpl;
 
 import java.util.List;
 
+@Getter
 @SuppressWarnings({"NotNullNullableValidation", "SqlNoDataSourceInspection", "SqlResolve"})
 public abstract class AbstractDAO<T extends UpdatableRecordImpl<T>> {
     @NotNull
     private final DSLContext context;
 
-    @Getter
     @NotNull
     private final TableField<T, Long> uniqueKey;
 
-    @Getter
     @NotNull
     private final TableImpl<T> table;
 

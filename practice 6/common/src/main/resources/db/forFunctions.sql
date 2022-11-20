@@ -28,6 +28,11 @@ inner join invoice as i on item.invoice_id = i.id
 where i.invoice_date between '2021-04-04' and '2021-05-24'
 group by item.product_id;
 
+select item.product_id, sum(item.cost * item.amount) / cast(sum(item.amount) as float) as average_cost from invoice_item as item
+inner join invoice as i on item.invoice_id = i.id
+where i.invoice_date between '2021-04-04' and '2021-05-24'
+group by item.product_id;
+
 
 -- Вывести список товаров, поставленных организациями за период. Если организация товары не поставляла, то она все равно должна быть отражена в списке.
 select product_id, o.tin from organisation as o
