@@ -217,7 +217,9 @@ public class ProductDAOTest {
                     if (!averageCosts.containsKey(invoiceItem.getProduct().getId())) {
                         averageCosts.put(invoiceItem.getProduct().getId(), new ArrayList<>());
                     }
-                    averageCosts.get(invoiceItem.getProduct().getId()).add(invoiceItem.getCost());
+                    for (int i = 0; i < invoiceItem.getAmount(); i++) {
+                        averageCosts.get(invoiceItem.getProduct().getId()).add(invoiceItem.getCost());
+                    }
                 }
             }
         }

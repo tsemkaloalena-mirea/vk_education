@@ -31,16 +31,6 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
     }
 
     @Override
-    public String getValuesForInsertStatement() {
-        return "(tin, name, account) VALUES (?,?,?)";
-    }
-
-    @Override
-    public String getValuesForUpdateStatement() {
-        return "name = ?, account = ?";
-    }
-
-    @Override
     public PreparedStatement fillInsertStatement(PreparedStatement preparedStatement, Organisation entity) throws SQLException {
         int fieldIndex = 1;
         preparedStatement.setLong(fieldIndex++, entity.getTIN());
@@ -61,10 +51,10 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
     public List<Organisation> getOrganisationsSortedByProductsAmount() {
         List<Organisation> organisations = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            String query = "select o.* from organisation as o\n" +
-                    "inner join invoice as i on o.tin = i.organisation_tin\n" +
-                    "\tinner join invoice_item as item on i.id = item.invoice_id\n" +
-                    "group by o.tin order by sum(item.amount) desc limit 10";
+            String query = "SELECT o.* FROM invoice AS i\n" +
+                    "INNER JOIN invoice_item AS item ON i.id = item.invoice_id\n" +
+                    "RIGHT JOIN organisation AS o ON o.tin = i.organisation_tin\n" +
+                    "GROUP BY o.tin ORDER BY sum(item.amount) DESC NULLS LAST limit 10;";
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 organisations.add(getEntityFromResultSet(resultSet));
@@ -75,13 +65,13 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
         return organisations;
     }
 
-    public List<Organisation> getOrganisationsWithProductsAmountMoreThenGiven(Integer amount) {
+    public List<Organisation> getOrganisationsWithProductsAmountMoreThenGiven(Integer amount, Long productId) {
         List<Organisation> organisations = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            String query = "select o.* from organisation as o\n" +
-                    "inner join invoice as i on i.organisation_tin = o.tin\n" +
-                    "inner join invoice_item as item on i.id = item.invoice_id\n" +
-                    "group by o.tin having sum(item.amount) > " + amount;
+            String query = "SELECT o.*, sum(item.amount) FROM organisation AS o\n" +
+                    "INNER JOIN invoice AS i ON i.organisation_tin = o.tin\n" +
+                    "INNER JOIN invoice_item AS item ON i.id = item.invoice_id AND item.product_id = " + productId + "\n" +
+                    "GROUP BY o.tin HAVING sum(item.amount) > " + amount;
 
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -95,15 +85,16 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
 
     public List<JsonObject> getOrganisationProductsForPeriod(LocalDate fromDate, LocalDate toDate) {
         List<JsonObject> products = new ArrayList<>();
-        String query = "select product_id, o.tin from organisation as o\n" +
-                "inner join invoice as i on i.organisation_tin = o.tin\n" +
-                "\tinner join invoice_item as item on item.invoice_id = i.id\n" +
-                "\t\twhere i.invoice_date between ? and ?\n" +
-                "union select NULL, o.tin from organisation as o\n" +
-                "where not exists (\n" +
-                "\tselect * from invoice as i2\n" +
-                "\t\twhere i2.organisation_tin = o.tin and\n" +
-                "\t\t\ti2.invoice_date between ? and ?)";
+        String query = "SELECT product_id, o.tin FROM organisation AS o\n" +
+                "INNER JOIN invoice AS i ON i.organisation_tin = o.tin\n" +
+                "\tINNER JOIN invoice_item AS item ON item.invoice_id = i.id\n" +
+                "\t\tWHERE i.invoice_date BETWEEN ? AND ?\n" +
+                "UNION SELECT NULL, o.tin FROM organisation AS o\n" +
+                "WHERE not exists (\n" +
+                "\tSELECT * FROM invoice AS i2\n" +
+                "\t\tWHERE i2.organisation_tin = o.tin AND\n" +
+                "\t\t\ti2.invoice_date BETWEEN ? AND ?\n" +
+                ");";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int fieldIndex = 1;
             preparedStatement.setDate(fieldIndex++, Date.valueOf(fromDate));

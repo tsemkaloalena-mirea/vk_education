@@ -194,12 +194,13 @@ public class OrganisationDAOTest {
     public void getOrganisationsSortedByProductsAmount() {
         Map<Long, Integer> correctOrganizations = new HashMap<>();
 
+        for (Organisation organisation : organisationDAO.all()) {
+            correctOrganizations.put(organisation.getTIN(), 0);
+        }
+
         for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
             Organisation organisation = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisation();
-            Integer itemsAmount = 0;
-            if (correctOrganizations.containsKey(organisation.getTIN())) {
-                itemsAmount = correctOrganizations.get(organisation.getTIN());
-            }
+            Integer itemsAmount = correctOrganizations.get(organisation.getTIN());
             itemsAmount += invoiceItem.getAmount();
             correctOrganizations.put(organisation.getTIN(), itemsAmount);
         }
@@ -210,8 +211,6 @@ public class OrganisationDAOTest {
                         Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 
         List<Organisation> organisations = organisationDAO.getOrganisationsSortedByProductsAmount();
-        System.out.println(organisations);
-        System.out.println(correctOrganizations);
         assertEquals(correctOrganizations.size(), organisations.size());
         for (Organisation organisation : organisations) {
             assertTrue(correctOrganizations.containsKey(organisation.getTIN()));
@@ -220,19 +219,22 @@ public class OrganisationDAOTest {
 
     @Test
     public void getOrganisationsWithProductsAmountMoreThenGiven() {
-        int n = 12;
+        int n = 5;
+        Long productId = 7L;
         Map<Long, Integer> correctOrganizations = new HashMap<>();
         for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
-            Organisation organisation = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisation();
-            Integer itemsAmount = 0;
-            if (correctOrganizations.containsKey(organisation.getTIN())) {
-                itemsAmount = correctOrganizations.get(organisation.getTIN());
+            if (productId.equals(invoiceItem.getProduct().getId())) {
+                Organisation organisation = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisation();
+                Integer itemsAmount = 0;
+                if (correctOrganizations.containsKey(organisation.getTIN())) {
+                    itemsAmount = correctOrganizations.get(organisation.getTIN());
+                }
+                itemsAmount += invoiceItem.getAmount();
+                correctOrganizations.put(organisation.getTIN(), itemsAmount);
             }
-            itemsAmount += invoiceItem.getAmount();
-            correctOrganizations.put(organisation.getTIN(), itemsAmount);
         }
 
-        List<Long> organisationTINs = organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(n)
+        List<Long> organisationTINs = organisationDAO.getOrganisationsWithProductsAmountMoreThenGiven(n, productId)
                 .stream().map(Organisation::getTIN).collect(Collectors.toList());
 
         int size = 0;

@@ -28,6 +28,11 @@ public final class Invoice extends AbstractEntity {
     }
 
     @Override
+    public List<String> getFields() {
+        return List.of(new String[]{"invoice_date", "organisation_tin"});
+    }
+
+    @Override
     public String toString() {
         return "Invoice{" +
                 "id=" + id +

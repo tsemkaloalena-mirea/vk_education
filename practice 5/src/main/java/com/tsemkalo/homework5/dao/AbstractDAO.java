@@ -10,7 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import static java.lang.String.join;
 
 @SuppressWarnings({"NotNullNullableValidation", "SqlNoDataSourceInspection", "SqlResolve"})
 public abstract class AbstractDAO<T extends AbstractEntity> {
@@ -61,7 +64,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> {
 
     public void save(@NotNull T entity) {
         try (PreparedStatement preparedStatement = this.fillInsertStatement(connection.prepareStatement(
-                "INSERT INTO " + this.getTableName() + " " + this.getValuesForInsertStatement()), entity)) {
+                "INSERT INTO " + this.getTableName() + " " + this.getValuesForInsertStatement(entity)), entity)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -70,7 +73,7 @@ public abstract class AbstractDAO<T extends AbstractEntity> {
 
     public void update(@NotNull T entity) {
         try (PreparedStatement preparedStatement = this.fillUpdateStatement(connection.prepareStatement(
-                "UPDATE " + this.getTableName() + " SET " + this.getValuesForUpdateStatement() +
+                "UPDATE " + this.getTableName() + " SET " + this.getValuesForUpdateStatement(entity) +
                         " WHERE " + this.getUniqueKeyName() + " = ?"), entity)) {
             if (preparedStatement.executeUpdate() == 0) {
                 throw new IllegalStateException("Record with " + this.getUniqueKeyName() + " " + entity.getUniqueKey() + " not found");
@@ -102,11 +105,23 @@ public abstract class AbstractDAO<T extends AbstractEntity> {
         }
     }
 
+    public String getValuesForInsertStatement(T entity) {
+        String fields = join(", ", entity.getFields());
+        String values = join(",", Collections.nCopies(entity.getFields().size(), "?"));
+        return "(" + fields + ") VALUES (" + values + ")";
+    }
+
+    public String getValuesForUpdateStatement(T entity) {
+        List<String> fields = new ArrayList<>();
+        for (String field : entity.getFields()) {
+            if (!field.equals(this.getUniqueKeyName())) {
+                fields.add(field + " = ?");
+            }
+        }
+        return join(", ", fields);
+    }
+
     abstract public T getEntityFromResultSet(ResultSet resultSet) throws SQLException;
-
-    abstract public String getValuesForInsertStatement();
-
-    abstract public String getValuesForUpdateStatement();
 
     abstract public PreparedStatement fillInsertStatement(PreparedStatement preparedStatement, T entity) throws SQLException;
 

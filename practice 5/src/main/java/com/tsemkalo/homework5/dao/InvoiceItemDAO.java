@@ -35,16 +35,6 @@ public final class InvoiceItemDAO extends AbstractDAO<InvoiceItem> {
     }
 
     @Override
-    public String getValuesForInsertStatement() {
-        return "(cost, product_id, amount, invoice_id) VALUES(?,?,?,?)";
-    }
-
-    @Override
-    public String getValuesForUpdateStatement() {
-        return "cost = ?, product_id = ?, amount = ?, invoice_id = ?";
-    }
-
-    @Override
     public PreparedStatement fillInsertStatement(PreparedStatement preparedStatement, InvoiceItem entity) throws SQLException {
         int fieldIndex = 1;
         preparedStatement.setInt(fieldIndex++, entity.getCost());

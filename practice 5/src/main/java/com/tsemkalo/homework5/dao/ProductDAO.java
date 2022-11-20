@@ -30,16 +30,6 @@ public final class ProductDAO extends AbstractDAO<Product> {
     }
 
     @Override
-    public String getValuesForInsertStatement() {
-        return "(name) VALUES (?)";
-    }
-
-    @Override
-    public String getValuesForUpdateStatement() {
-        return "name = ?";
-    }
-
-    @Override
     public PreparedStatement fillInsertStatement(PreparedStatement preparedStatement, Product entity) throws SQLException {
         int fieldIndex = 1;
         preparedStatement.setString(fieldIndex, entity.getName());
@@ -56,10 +46,10 @@ public final class ProductDAO extends AbstractDAO<Product> {
 
     public List<JsonObject> getProductsTotalForPeriod(LocalDate fromDate, LocalDate toDate) {
         List<JsonObject> products = new ArrayList<>();
-        String query = "select i.invoice_date, item.product_id, sum(item.amount) as amount, sum(item.cost) as cost, sum(item.amount * item.cost) as total from invoice_item as item\n" +
-                "inner join invoice as i on item.invoice_id = i.id\n" +
-                "where i.invoice_date between ? and ?\n" +
-                "group by i.invoice_date, item.product_id order by i.invoice_date;";
+        String query = "SELECT i.invoice_date, item.product_id, sum(item.amount) AS amount, sum(item.cost) AS cost, sum(item.amount * item.cost) AS total FROM invoice_item AS item\n" +
+                "INNER JOIN invoice AS i ON item.invoice_id = i.id\n" +
+                "WHERE i.invoice_date BETWEEN ? AND ?\n" +
+                "GROUP BY i.invoice_date, item.product_id ORDER BY i.invoice_date;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int fieldIndex = 1;
             preparedStatement.setDate(fieldIndex++, Date.valueOf(fromDate));
@@ -82,10 +72,10 @@ public final class ProductDAO extends AbstractDAO<Product> {
 
     public List<JsonObject> getProductsAverageCostForPeriod(LocalDate fromDate, LocalDate toDate) {
         List<JsonObject> products = new ArrayList<>();
-        String query = "select item.product_id, avg(cost) as average_cost from invoice_item as item\n" +
-                "inner join invoice as i on item.invoice_id = i.id\n" +
-                "where i.invoice_date between ? and ?\n" +
-                "group by item.product_id;";
+        String query = "SELECT item.product_id, sum(item.cost * item.amount) / CAST(sum(item.amount) AS float) AS average_cost FROM invoice_item AS item\n" +
+                "INNER JOIN invoice AS i ON item.invoice_id = i.id\n" +
+                "WHERE i.invoice_date BETWEEN ? AND ?\n" +
+                "GROUP BY item.product_id;";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             int fieldIndex = 1;
             preparedStatement.setDate(fieldIndex++, Date.valueOf(fromDate));

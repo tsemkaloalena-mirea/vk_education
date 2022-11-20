@@ -41,16 +41,6 @@ public final class InvoiceDAO extends AbstractDAO<Invoice> {
     }
 
     @Override
-    public String getValuesForInsertStatement() {
-        return "(invoice_date,organisation_tin) VALUES(?,?)";
-    }
-
-    @Override
-    public String getValuesForUpdateStatement() {
-        return "invoice_date = ?, organisation_tin = ?";
-    }
-
-    @Override
     public PreparedStatement fillInsertStatement(PreparedStatement preparedStatement, Invoice entity) throws SQLException {
         int fieldIndex = 1;
         preparedStatement.setDate(fieldIndex++, Date.valueOf(entity.getInvoiceDate()));

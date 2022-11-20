@@ -3,6 +3,8 @@ package com.tsemkalo.homework5.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public final class Product extends AbstractEntity {
@@ -13,6 +15,11 @@ public final class Product extends AbstractEntity {
     @Override
     public Long getUniqueKey() {
         return id;
+    }
+
+    @Override
+    public List<String> getFields() {
+        return List.of(new String[]{"name"});
     }
 
     @Override
