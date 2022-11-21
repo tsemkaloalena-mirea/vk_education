@@ -12,15 +12,7 @@ import java.util.List;
 public final class Invoice extends AbstractEntity {
     private final Long id;
     private final LocalDate invoiceDate;
-    private final Organisation organisation;
-    private final List<InvoiceItem> items;
-
-    public Invoice(Long id, LocalDate invoiceDate, Organisation organisation) {
-        this.id = id;
-        this.invoiceDate = invoiceDate;
-        this.organisation = organisation;
-        this.items = new ArrayList<>();
-    }
+    private final Long organisationTIN;
 
     @Override
     public Long getUniqueKey() {
@@ -37,8 +29,7 @@ public final class Invoice extends AbstractEntity {
         return "Invoice{" +
                 "id=" + id +
                 ", invoiceDate=" + invoiceDate +
-                ", organisation=" + organisation +
-                ", items=" + items +
+                ", organisationId=" + organisationTIN +
                 '}';
     }
 }

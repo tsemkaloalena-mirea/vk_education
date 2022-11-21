@@ -199,10 +199,10 @@ public class OrganisationDAOTest {
         }
 
         for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
-            Organisation organisation = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisation();
-            Integer itemsAmount = correctOrganizations.get(organisation.getTIN());
+            Long organisationTIN = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisationTIN();
+            Integer itemsAmount = correctOrganizations.get(organisationTIN);
             itemsAmount += invoiceItem.getAmount();
-            correctOrganizations.put(organisation.getTIN(), itemsAmount);
+            correctOrganizations.put(organisationTIN, itemsAmount);
         }
         correctOrganizations = correctOrganizations.entrySet().stream().
                 sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
@@ -223,14 +223,14 @@ public class OrganisationDAOTest {
         Long productId = 7L;
         Map<Long, Integer> correctOrganizations = new HashMap<>();
         for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
-            if (productId.equals(invoiceItem.getProduct().getId())) {
-                Organisation organisation = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisation();
+            if (productId.equals(invoiceItem.getProductId())) {
+                Long organisationTIN = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisationTIN();
                 Integer itemsAmount = 0;
-                if (correctOrganizations.containsKey(organisation.getTIN())) {
-                    itemsAmount = correctOrganizations.get(organisation.getTIN());
+                if (correctOrganizations.containsKey(organisationTIN)) {
+                    itemsAmount = correctOrganizations.get(organisationTIN);
                 }
                 itemsAmount += invoiceItem.getAmount();
-                correctOrganizations.put(organisation.getTIN(), itemsAmount);
+                correctOrganizations.put(organisationTIN, itemsAmount);
             }
         }
 
@@ -260,12 +260,12 @@ public class OrganisationDAOTest {
         for (InvoiceItem invoiceItem : invoiceItemDAO.all()) {
             Invoice invoice = invoiceDAO.get(invoiceItem.getInvoiceId());
             if (invoice.getInvoiceDate().isEqual(fromDate) || invoice.getInvoiceDate().isEqual(toDate) || invoice.getInvoiceDate().isAfter(fromDate) && invoice.getInvoiceDate().isBefore(toDate)) {
-                Long organisationTIN = invoice.getOrganisation().getTIN();
+                Long organisationTIN = invoice.getOrganisationTIN();
                 if (!correctOrganisationProducts.containsKey(organisationTIN)) {
                     correctOrganisationProducts.put(organisationTIN, new ArrayList<>());
                     organisationsHavingProducts.put(organisationTIN, true);
                 }
-                correctOrganisationProducts.get(organisationTIN).add(invoiceItem.getProduct().getId());
+                correctOrganisationProducts.get(organisationTIN).add(invoiceItem.getProductId());
             }
         }
 

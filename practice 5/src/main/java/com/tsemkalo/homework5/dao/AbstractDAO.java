@@ -16,15 +16,14 @@ import java.util.List;
 import static java.lang.String.join;
 
 @SuppressWarnings({"NotNullNullableValidation", "SqlNoDataSourceInspection", "SqlResolve"})
+@Getter
 public abstract class AbstractDAO<T extends AbstractEntity> {
     @NotNull
     private final Connection connection;
 
-    @Getter
     @NotNull
     private final String uniqueKeyName;
 
-    @Getter
     @NotNull
     private final String tableName;
 

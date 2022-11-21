@@ -16,13 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class OrganisationDAO extends AbstractDAO<Organisation> {
-    private final @NotNull
-    Connection connection;
-
     @Inject
     public OrganisationDAO(@NotNull Connection connection) {
         super(connection, "organisation", "tin");
-        this.connection = connection;
     }
 
     @Override
@@ -50,7 +46,7 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
 
     public List<Organisation> getOrganisationsSortedByProductsAmount() {
         List<Organisation> organisations = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = getConnection().createStatement()) {
             String query = "SELECT o.* FROM invoice AS i\n" +
                     "INNER JOIN invoice_item AS item ON i.id = item.invoice_id\n" +
                     "RIGHT JOIN organisation AS o ON o.tin = i.organisation_tin\n" +
@@ -67,7 +63,7 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
 
     public List<Organisation> getOrganisationsWithProductsAmountMoreThenGiven(Integer amount, Long productId) {
         List<Organisation> organisations = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = getConnection().createStatement()) {
             String query = "SELECT o.*, sum(item.amount) FROM organisation AS o\n" +
                     "INNER JOIN invoice AS i ON i.organisation_tin = o.tin\n" +
                     "INNER JOIN invoice_item AS item ON i.id = item.invoice_id AND item.product_id = " + productId + "\n" +
@@ -95,7 +91,7 @@ public final class OrganisationDAO extends AbstractDAO<Organisation> {
                 "\t\tWHERE i2.organisation_tin = o.tin AND\n" +
                 "\t\t\ti2.invoice_date BETWEEN ? AND ?\n" +
                 ");";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
             int fieldIndex = 1;
             preparedStatement.setDate(fieldIndex++, Date.valueOf(fromDate));
             preparedStatement.setDate(fieldIndex++, Date.valueOf(toDate));

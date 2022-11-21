@@ -15,13 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ProductDAO extends AbstractDAO<Product> {
-    @NotNull
-    private final Connection connection;
-
     @Inject
     public ProductDAO(@NotNull Connection connection) {
         super(connection, "product", "id");
-        this.connection = connection;
     }
 
     @Override
@@ -50,7 +46,7 @@ public final class ProductDAO extends AbstractDAO<Product> {
                 "INNER JOIN invoice AS i ON item.invoice_id = i.id\n" +
                 "WHERE i.invoice_date BETWEEN ? AND ?\n" +
                 "GROUP BY i.invoice_date, item.product_id ORDER BY i.invoice_date;";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
             int fieldIndex = 1;
             preparedStatement.setDate(fieldIndex++, Date.valueOf(fromDate));
             preparedStatement.setDate(fieldIndex, Date.valueOf(toDate));
@@ -76,7 +72,7 @@ public final class ProductDAO extends AbstractDAO<Product> {
                 "INNER JOIN invoice AS i ON item.invoice_id = i.id\n" +
                 "WHERE i.invoice_date BETWEEN ? AND ?\n" +
                 "GROUP BY item.product_id;";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
             int fieldIndex = 1;
             preparedStatement.setDate(fieldIndex++, Date.valueOf(fromDate));
             preparedStatement.setDate(fieldIndex, Date.valueOf(toDate));

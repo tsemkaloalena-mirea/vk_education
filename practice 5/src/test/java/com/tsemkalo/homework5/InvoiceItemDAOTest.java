@@ -53,7 +53,7 @@ public class InvoiceItemDAOTest {
         assertNotNull(invoiceItem);
         assertEquals(invoiceItem.getId(), id);
         assertNotNull(invoiceItem.getCost());
-        assertNotNull(invoiceItem.getProduct());
+        assertNotNull(invoiceItem.getProductId());
         assertNotNull(invoiceItem.getAmount());
         assertNotNull(invoiceItem.getInvoiceId());
     }
@@ -72,7 +72,7 @@ public class InvoiceItemDAOTest {
         for (InvoiceItem invoiceItem : invoiceItems) {
             assertNotNull(invoiceItem.getId());
             assertNotNull(invoiceItem.getCost());
-            assertNotNull(invoiceItem.getProduct());
+            assertNotNull(invoiceItem.getProductId());
             assertNotNull(invoiceItem.getAmount());
             assertNotNull(invoiceItem.getInvoiceId());
             assertFalse(uniqueUsedIds.contains(invoiceItem.getId()));
@@ -84,12 +84,12 @@ public class InvoiceItemDAOTest {
     public void saveWhenIdIsSet() {
         Long id = 5L;
         int oldSize = invoiceItemDAO.all().size();
-        InvoiceItem invoiceItem = new InvoiceItem(id, 9, productDAO.get(1L), 17, 1L);
+        InvoiceItem invoiceItem = new InvoiceItem(id, 9, 1L, 17, 1L);
         invoiceItemDAO.save(invoiceItem);
         int newSize = invoiceItemDAO.all().size();
         assertEquals(oldSize, newSize - 1);
         assertNotEquals(invoiceItem.getCost(), invoiceItemDAO.get(id).getCost());
-        assertNotEquals(invoiceItem.getProduct().getId(), invoiceItemDAO.get(id).getProduct().getId());
+        assertNotEquals(invoiceItem.getProductId(), invoiceItemDAO.get(id).getProductId());
         assertNotEquals(invoiceItem.getAmount(), invoiceItemDAO.get(id).getAmount());
         assertNotEquals(invoiceItem.getInvoiceId(), invoiceItemDAO.get(id).getInvoiceId());
     }
@@ -97,14 +97,14 @@ public class InvoiceItemDAOTest {
     @Test
     public void saveWhenIdIsNotSet() {
         int oldSize = invoiceItemDAO.all().size();
-        InvoiceItem invoiceItem = new InvoiceItem(null, 9, productDAO.get(1L), 17, 1L);
+        InvoiceItem invoiceItem = new InvoiceItem(null, 9, 1L, 17, 1L);
 
         invoiceItemDAO.save(invoiceItem);
         int newSize = invoiceItemDAO.all().size();
         InvoiceItem newInvoiceItem = invoiceItemDAO.all().get(newSize - 1);
         assertNotNull(newInvoiceItem.getId());
         assertEquals(invoiceItem.getCost(), newInvoiceItem.getCost());
-        assertEquals(invoiceItem.getProduct().getId(), newInvoiceItem.getProduct().getId());
+        assertEquals(invoiceItem.getProductId(), newInvoiceItem.getProductId());
         assertEquals(invoiceItem.getAmount(), newInvoiceItem.getAmount());
         assertEquals(invoiceItem.getInvoiceId(), newInvoiceItem.getInvoiceId());
         assertEquals(newSize, oldSize + 1);
@@ -113,7 +113,7 @@ public class InvoiceItemDAOTest {
     @Test
     public void saveWhenInvoiceDoesNotExist() {
         int oldSize = invoiceItemDAO.all().size();
-        InvoiceItem invoiceItem = new InvoiceItem(null, 9, productDAO.get(1L), 17, 1001L);
+        InvoiceItem invoiceItem = new InvoiceItem(null, 9, 1L, 17, 1001L);
 
         invoiceItemDAO.save(invoiceItem);
 
@@ -121,7 +121,7 @@ public class InvoiceItemDAOTest {
         InvoiceItem lastInvoiceItem = invoiceItemDAO.all().get(newSize - 1);
         assertEquals(oldSize, newSize);
         assertNotEquals(invoiceItem.getCost(), lastInvoiceItem.getCost());
-        assertNotEquals(invoiceItem.getProduct().getId(), lastInvoiceItem.getProduct().getId());
+        assertNotEquals(invoiceItem.getProductId(), lastInvoiceItem.getProductId());
         assertNotEquals(invoiceItem.getAmount(), lastInvoiceItem.getAmount());
         assertNotEquals(invoiceItem.getInvoiceId(), lastInvoiceItem.getInvoiceId());
     }
@@ -129,13 +129,13 @@ public class InvoiceItemDAOTest {
     @Test
     public void updateWhenIdExists() {
         Long id = 5L;
-        InvoiceItem invoiceItem = new InvoiceItem(id, 9, productDAO.get(1L), 17, 1L);
+        InvoiceItem invoiceItem = new InvoiceItem(id, 9, 1L, 17, 1L);
         int oldSize = invoiceItemDAO.all().size();
 
         invoiceItemDAO.update(invoiceItem);
 
         assertEquals(invoiceItemDAO.get(id).getCost(), invoiceItem.getCost());
-        assertEquals(invoiceItemDAO.get(id).getProduct().getId(), invoiceItem.getProduct().getId());
+        assertEquals(invoiceItemDAO.get(id).getProductId(), invoiceItem.getProductId());
         assertEquals(invoiceItemDAO.get(id).getAmount(), invoiceItem.getAmount());
         assertEquals(invoiceItemDAO.get(id).getInvoiceId(), invoiceItem.getInvoiceId());
         int newSize = invoiceItemDAO.all().size();
@@ -145,7 +145,7 @@ public class InvoiceItemDAOTest {
     @Test
     public void updateWhenIdDoesNotExist() {
         Long id = 5148L;
-        InvoiceItem invoiceItem = new InvoiceItem(id, 9, productDAO.get(1L), 17, 1L);
+        InvoiceItem invoiceItem = new InvoiceItem(id, 9, 1L, 17, 1L);
         int oldSize = invoiceItemDAO.all().size();
 
         assertThrows(IllegalStateException.class, () -> invoiceItemDAO.update(invoiceItem));
@@ -157,7 +157,7 @@ public class InvoiceItemDAOTest {
     @Test
     public void deleteWhenEntityExists() {
         Long id = 5L;
-        InvoiceItem invoiceItem = new InvoiceItem(id, 14, productDAO.get(2L), 5, 2L);
+        InvoiceItem invoiceItem = new InvoiceItem(id, 14, 2L, 5, 2L);
         int oldSize = invoiceItemDAO.all().size();
 
         invoiceItemDAO.delete(invoiceItem);
@@ -170,7 +170,7 @@ public class InvoiceItemDAOTest {
     @Test
     public void deleteWhenEntityDoesNotExist() {
         Long id = 26487L;
-        InvoiceItem invoiceItem = new InvoiceItem(id, 14, productDAO.get(2L), 5, 2L);
+        InvoiceItem invoiceItem = new InvoiceItem(id, 14, 2L, 5, 2L);
         int oldSize = invoiceItemDAO.all().size();
 
         assertThrows(IllegalStateException.class, () -> invoiceItemDAO.delete(invoiceItem));

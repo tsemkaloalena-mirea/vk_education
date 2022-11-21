@@ -60,8 +60,7 @@ public class InvoiceDAOTest {
         assertNotNull(invoice);
         assertEquals(invoice.getId(), id);
         assertNotNull(invoice.getInvoiceDate());
-        assertNotNull(invoice.getItems());
-        assertFalse(invoice.getItems().isEmpty());
+        assertNotNull(invoice.getOrganisationTIN());
     }
 
     @Test
@@ -78,8 +77,7 @@ public class InvoiceDAOTest {
         for (Invoice invoice : invoices) {
             assertNotNull(invoice.getId());
             assertNotNull(invoice.getInvoiceDate());
-            assertNotNull(invoice.getItems());
-            assertFalse(invoice.getItems().isEmpty());
+            assertNotNull(invoice.getOrganisationTIN());
             assertFalse(uniqueUsedIds.contains(invoice.getId()));
             uniqueUsedIds.add(invoice.getId());
         }
@@ -88,7 +86,7 @@ public class InvoiceDAOTest {
     @Test
     public void saveWhenIdIsSet() {
         Long id = 2L;
-        Invoice invoice = new Invoice(id, LocalDate.now(), organisationDAO.get(11121L));
+        Invoice invoice = new Invoice(id, LocalDate.now(), 11121L);
         int oldSize = invoiceDAO.all().size();
 
         invoiceDAO.save(invoice);
@@ -96,15 +94,15 @@ public class InvoiceDAOTest {
         int newSize = invoiceDAO.all().size();
         Invoice lastInvoice = invoiceDAO.all().get(invoiceDAO.all().size() - 1);
         assertEquals(invoice.getInvoiceDate(), lastInvoice.getInvoiceDate());
-        assertEquals(invoice.getOrganisation().getTIN(), lastInvoice.getOrganisation().getTIN());
+        assertEquals(invoice.getOrganisationTIN(), lastInvoice.getOrganisationTIN());
         assertNotEquals(invoice.getInvoiceDate(), invoiceDAO.get(id).getInvoiceDate());
-        assertNotEquals(invoice.getOrganisation().getTIN(), invoiceDAO.get(id).getOrganisation().getTIN());
+        assertNotEquals(invoice.getOrganisationTIN(), invoiceDAO.get(id).getOrganisationTIN());
         assertEquals(newSize, oldSize + 1);
     }
 
     @Test
     public void saveWhenIdIsNotSet() {
-        Invoice invoice = new Invoice(null, LocalDate.now(), organisationDAO.get(11121L));
+        Invoice invoice = new Invoice(null, LocalDate.now(), 11121L);
         int oldSize = invoiceDAO.all().size();
 
         invoiceDAO.save(invoice);
@@ -112,21 +110,20 @@ public class InvoiceDAOTest {
         Invoice lastInvoice = invoiceDAO.all().get(newSize - 1);
         assertNotNull(lastInvoice.getId());
         assertEquals(invoice.getInvoiceDate(), lastInvoice.getInvoiceDate());
-        assertEquals(invoice.getOrganisation().getTIN(), lastInvoice.getOrganisation().getTIN());
+        assertEquals(invoice.getOrganisationTIN(), lastInvoice.getOrganisationTIN());
         assertEquals(newSize, oldSize + 1);
     }
 
     @Test
     public void updateWhenIdExists() {
         Long id = 2L;
-        Invoice invoice = new Invoice(id, LocalDate.now(), organisationDAO.get(11117L));
+        Invoice invoice = new Invoice(id, LocalDate.now(), 11117L);
         int oldSize = invoiceDAO.all().size();
 
         invoiceDAO.update(invoice);
 
         assertEquals(invoiceDAO.get(id).getInvoiceDate(), invoice.getInvoiceDate());
-        assertEquals(invoiceDAO.get(id).getOrganisation().getTIN(), invoice.getOrganisation().getTIN());
-        assertEquals(invoiceDAO.get(id).getOrganisation().getName(), invoice.getOrganisation().getName());
+        assertEquals(invoiceDAO.get(id).getOrganisationTIN(), invoice.getOrganisationTIN());
         int newSize = invoiceDAO.all().size();
         assertEquals(newSize, oldSize);
     }
@@ -134,7 +131,7 @@ public class InvoiceDAOTest {
     @Test
     public void updateWhenIdDoesNotExist() {
         Long id = 28L;
-        Invoice invoice = new Invoice(id, LocalDate.now(), organisationDAO.get(11117L));
+        Invoice invoice = new Invoice(id, LocalDate.now(), 11117L);
         int oldSize = invoiceDAO.all().size();
 
         assertThrows(IllegalStateException.class, () -> invoiceDAO.update(invoice));
@@ -146,7 +143,7 @@ public class InvoiceDAOTest {
     @Test
     public void deleteWhenEntityExists() {
         Long id = 8L;
-        Invoice invoice = new Invoice(id, LocalDate.parse("2022-01-20"), organisationDAO.get(11118L));
+        Invoice invoice = new Invoice(id, LocalDate.parse("2022-01-20"), 11118L);
         int oldSize = invoiceDAO.all().size();
 
         invoiceDAO.delete(invoice);
@@ -159,7 +156,7 @@ public class InvoiceDAOTest {
     @Test
     public void deleteWhenIdDoesNotExist() {
         Long id = 28L;
-        Invoice invoice = new Invoice(id, LocalDate.parse("2022-01-20"), organisationDAO.get(11118L));
+        Invoice invoice = new Invoice(id, LocalDate.parse("2022-01-20"), 11118L);
         int oldSize = invoiceDAO.all().size();
 
         assertThrows(IllegalStateException.class, () -> invoiceDAO.delete(invoice));

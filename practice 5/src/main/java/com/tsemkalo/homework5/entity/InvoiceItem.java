@@ -10,7 +10,7 @@ import java.util.List;
 public final class InvoiceItem extends AbstractEntity {
     private final Long id;
     private final Integer cost;
-    private final Product product;
+    private final Long productId;
     private final Integer amount;
     private final Long invoiceId;
 
@@ -29,7 +29,7 @@ public final class InvoiceItem extends AbstractEntity {
         return "InvoiceItem{" +
                 "id=" + id +
                 ", cost=" + cost +
-                ", product=" + product +
+                ", productId=" + productId +
                 ", amount=" + amount +
                 ", invoiceId=" + invoiceId +
                 '}';

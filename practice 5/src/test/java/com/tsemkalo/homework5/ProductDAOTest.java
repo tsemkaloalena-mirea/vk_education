@@ -213,12 +213,12 @@ public class ProductDAOTest {
 
         for (Invoice invoice : invoiceDAO.all()) {
             if (invoice.getInvoiceDate().isEqual(fromDate) || invoice.getInvoiceDate().isEqual(toDate) || invoice.getInvoiceDate().isAfter(fromDate) && invoice.getInvoiceDate().isBefore(toDate)) {
-                for (InvoiceItem invoiceItem : invoice.getItems()) {
-                    if (!averageCosts.containsKey(invoiceItem.getProduct().getId())) {
-                        averageCosts.put(invoiceItem.getProduct().getId(), new ArrayList<>());
+                for (InvoiceItem invoiceItem : invoiceDAO.getInvoiceItemsByInvoiceId(invoice.getId())) {
+                    if (!averageCosts.containsKey(invoiceItem.getProductId())) {
+                        averageCosts.put(invoiceItem.getProductId(), new ArrayList<>());
                     }
                     for (int i = 0; i < invoiceItem.getAmount(); i++) {
-                        averageCosts.get(invoiceItem.getProduct().getId()).add(invoiceItem.getCost());
+                        averageCosts.get(invoiceItem.getProductId()).add(invoiceItem.getCost());
                     }
                 }
             }
