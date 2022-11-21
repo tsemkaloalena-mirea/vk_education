@@ -3,7 +3,6 @@ package com.tsemkalo.homework6;
 import generated.tables.records.ProductRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.jooq.DataType;
 import org.jooq.Record2;
 import org.jooq.Record5;
 
@@ -14,7 +13,6 @@ import java.util.List;
 import static generated.Tables.INVOICE;
 import static generated.Tables.INVOICE_ITEM;
 import static generated.Tables.PRODUCT;
-import static org.jooq.impl.DSL.avg;
 import static org.jooq.impl.DSL.cast;
 import static org.jooq.impl.DSL.sum;
 

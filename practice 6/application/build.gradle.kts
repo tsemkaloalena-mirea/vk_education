@@ -4,5 +4,5 @@ version = "1.0-SNAPSHOT"
 dependencies {
     implementation(project(":dao"))
     implementation(project(":common"))
-    implementation(project(":jooq-generated")) // TODO remove
+    implementation(project(":jooq-generated"))
 }

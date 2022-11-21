@@ -1,7 +1,6 @@
 package com.tsemkalo.homework6;
 
 import generated.tables.records.InvoiceItemRecord;
-import generated.tables.records.InvoiceRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -31,9 +30,6 @@ public class InvoiceItemDAOTest {
     @NotNull
     private InvoiceItemDAO invoiceItemDAO;
 
-    @NotNull
-    private ProductDAO productDAO;
-
     @BeforeEach
     public void init() {
         DBInitializer.initDb(CREDENTIALS);
@@ -41,7 +37,6 @@ public class InvoiceItemDAOTest {
             Connection connection = DriverManager.getConnection(CREDENTIALS.url(), CREDENTIALS.login(), CREDENTIALS.password());
             final DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
             this.invoiceItemDAO = new InvoiceItemDAO(context);
-            this.productDAO = new ProductDAO(context);
         } catch (SQLException exception) {
             exception.printStackTrace();
             System.exit(1);

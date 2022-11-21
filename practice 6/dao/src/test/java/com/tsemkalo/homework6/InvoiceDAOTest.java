@@ -15,14 +15,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InvoiceDAOTest {
     @NotNull
@@ -31,12 +29,6 @@ public class InvoiceDAOTest {
     @NotNull
     private InvoiceDAO invoiceDAO;
 
-    @NotNull
-    private OrganisationDAO organisationDAO;
-
-    @NotNull
-    private InvoiceItemDAO invoiceItemDAO;
-
     @BeforeEach
     public void init() {
         DBInitializer.initDb(CREDENTIALS);
@@ -44,8 +36,6 @@ public class InvoiceDAOTest {
             Connection connection = DriverManager.getConnection(CREDENTIALS.url(), CREDENTIALS.login(), CREDENTIALS.password());
             final DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
             this.invoiceDAO = new InvoiceDAO(context);
-            this.organisationDAO = new OrganisationDAO(context);
-            this.invoiceItemDAO = new InvoiceItemDAO(context);
         } catch (SQLException exception) {
             exception.printStackTrace();
             System.exit(1);
