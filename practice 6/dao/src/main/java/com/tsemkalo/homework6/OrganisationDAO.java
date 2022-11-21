@@ -27,11 +27,11 @@ public final class OrganisationDAO extends AbstractDAO<OrganisationRecord> {
     public List<OrganisationRecord> getOrganisationsSortedByProductsAmount() {
         return getContext()
                 .select(ORGANISATION.fields())
-                .from(ORGANISATION)
-                .innerJoin(INVOICE).on(ORGANISATION.TIN.eq(INVOICE.ORGANISATION_TIN))
+                .from(INVOICE)
                 .innerJoin(INVOICE_ITEM).on(INVOICE.ID.eq(INVOICE_ITEM.INVOICE_ID))
+                .rightJoin(ORGANISATION).on(ORGANISATION.TIN.eq(INVOICE.ORGANISATION_TIN))
                 .groupBy(ORGANISATION.TIN)
-                .orderBy(sum(INVOICE_ITEM.AMOUNT).desc())
+                .orderBy(sum(INVOICE_ITEM.AMOUNT).desc().nullsLast())
                 .limit(10)
                 .fetchInto(ORGANISATION);
     }

@@ -42,11 +42,5 @@ public final class ProductDAO extends AbstractDAO<ProductRecord> {
                 .where(INVOICE.INVOICE_DATE.between(fromDate, toDate))
                 .groupBy(INVOICE_ITEM.PRODUCT_ID)
                 .fetch();
-
-
-//        "select item.product_id, sum(item.cost * item.amount) / cast(sum(item.amount) as float) as average_cost from invoice_item as item\n" +
-//                "inner join invoice as i on item.invoice_id = i.id\n" +
-//                "where i.invoice_date between '2021-04-04' and '2021-05-24'\n" +
-//                "group by item.product_id;\n"
     }
 }

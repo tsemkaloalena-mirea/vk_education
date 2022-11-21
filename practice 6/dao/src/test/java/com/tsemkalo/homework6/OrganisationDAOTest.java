@@ -196,12 +196,13 @@ public class OrganisationDAOTest {
     public void getOrganisationRecordsSortedByProductsAmount() {
         Map<Long, Integer> correctOrganizations = new HashMap<>();
 
+        for (OrganisationRecord organisation : organisationDAO.all()) {
+            correctOrganizations.put(organisation.getTin(), 0);
+        }
+
         for (InvoiceItemRecord invoiceItem : invoiceItemDAO.all()) {
             Long organisationTIN = invoiceDAO.get(invoiceItem.getInvoiceId()).getOrganisationTin();
-            Integer itemsAmount = 0;
-            if (correctOrganizations.containsKey(organisationTIN)) {
-                itemsAmount = correctOrganizations.get(organisationTIN);
-            }
+            Integer itemsAmount = correctOrganizations.get(organisationTIN);
             itemsAmount += invoiceItem.getAmount();
             correctOrganizations.put(organisationTIN, itemsAmount);
         }
@@ -212,8 +213,6 @@ public class OrganisationDAOTest {
                         Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 
         List<OrganisationRecord> organisations = organisationDAO.getOrganisationsSortedByProductsAmount();
-        System.out.println(organisations);
-        System.out.println(correctOrganizations);
         assertEquals(correctOrganizations.size(), organisations.size());
         for (OrganisationRecord organisation : organisations) {
             assertTrue(correctOrganizations.containsKey(organisation.getTin()));
