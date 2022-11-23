@@ -2,12 +2,8 @@ package com.tsemkalo.homework7;
 
 import generated.tables.records.ManufacturerRecord;
 import generated.tables.records.ProductRecord;
-import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,11 +14,6 @@ import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("NotNullNullableValidation")
 public final class ProductServlet extends HttpServlet {
-    //    private final ContentGenerator contentGenerator;
-//
-//    public ProductServlet(ContentGenerator contentGenerator) {
-//        this.contentGenerator = contentGenerator;
-//    }
     @NotNull
     private final ProductDAO productDAO;
 
@@ -46,7 +37,8 @@ public final class ProductServlet extends HttpServlet {
             stringBuilder.append("<h1>Products</h1>\n");
 
             for (ProductRecord productRecord : productDAO.all()) {
-                stringBuilder.append(productRecord);
+                stringBuilder.append(productRecord.toString().replace("\n", "<br>\n"));
+                stringBuilder.append("<br>\n");
             }
 
             stringBuilder.append("</body>\n");
