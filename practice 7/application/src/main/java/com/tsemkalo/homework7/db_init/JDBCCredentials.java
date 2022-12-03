@@ -1,11 +1,8 @@
 package com.tsemkalo.homework7.db_init;
 
-import org.jetbrains.annotations.NotNull;
-
 public final class JDBCCredentials {
 
-    public static final @NotNull
-    JDBCCredentials DEFAULT = new JDBCCredentials(
+    public static final JDBCCredentials DEFAULT = new JDBCCredentials(
             "127.0.0.1",
             "5432",
             "db_7",
@@ -13,25 +10,19 @@ public final class JDBCCredentials {
             "rootpswd"
     );
 
-    private static final @NotNull
-    String PREFIX = "jdbc:postgresql";
+    private static final String PREFIX = "jdbc:postgresql";
 
-    private final @NotNull
-    String host;
-    private final @NotNull
-    String port;
-    private final @NotNull
-    String dbName;
-    private final @NotNull
-    String login;
-    private final @NotNull
-    String password;
+    private final String host;
 
-    private JDBCCredentials(@NotNull String host,
-                            @NotNull String port,
-                            @NotNull String dbName,
-                            @NotNull String login,
-                            @NotNull String password) {
+    private final String port;
+
+    private final String dbName;
+
+    private final String login;
+
+    private final String password;
+
+    private JDBCCredentials(String host, String port, String dbName, String login, String password) {
         this.host = host;
         this.port = port;
         this.dbName = dbName;
@@ -39,20 +30,17 @@ public final class JDBCCredentials {
         this.password = password;
     }
 
-    public @NotNull
-    String url() {
+    public String url() {
         return PREFIX
                 + "://" + host + ':' + port
                 + '/' + dbName;
     }
 
-    public @NotNull
-    String login() {
+    public String login() {
         return login;
     }
 
-    public @NotNull
-    String password() {
+    public String password() {
         return password;
     }
 }

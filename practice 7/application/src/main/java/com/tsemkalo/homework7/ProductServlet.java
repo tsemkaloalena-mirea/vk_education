@@ -1,28 +1,23 @@
 package com.tsemkalo.homework7;
 
-import generated.tables.records.ManufacturerRecord;
-import generated.tables.records.ProductRecord;
+import com.google.inject.Inject;
+import generated.tables.pojos.Product;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("NotNullNullableValidation")
 public final class ProductServlet extends HttpServlet {
-    @NotNull
-    private final ProductDAO productDAO;
+    private final ProductService productService;
 
-    @NotNull
-    private final ManufacturerDAO manufacturerDAO;
-
-    public ProductServlet(@NotNull ProductDAO productDAO, @NotNull ManufacturerDAO manufacturerDAO) {
-        this.productDAO = productDAO;
-        this.manufacturerDAO = manufacturerDAO;
+    @Inject
+    public ProductServlet(ProductService productService) {
+        this.productService = productService;
     }
 
     @Override
@@ -36,8 +31,8 @@ public final class ProductServlet extends HttpServlet {
             stringBuilder.append("<body>\n");
             stringBuilder.append("<h1>Products</h1>\n");
 
-            for (ProductRecord productRecord : productDAO.all()) {
-                stringBuilder.append(productRecord.toString().replace("\n", "<br>\n"));
+            for (Product product : productService.getProducts()) {
+                stringBuilder.append(product.toString().replace("\n", "<br>\n"));
                 stringBuilder.append("<br>\n");
             }
 
@@ -54,25 +49,11 @@ public final class ProductServlet extends HttpServlet {
         String productName = req.getParameter("productName");
         Integer amount = Integer.parseInt(req.getParameter("amount"));
         String manufacturerName = req.getParameter("manufacturerName");
-        ManufacturerRecord manufacturer = manufacturerDAO.get(manufacturerName);
-        ProductRecord product = new ProductRecord()
-                .setName(productName)
-                .setAmount(amount)
-                .setManufacturerName(manufacturerName);
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Product ");
-        stringBuilder.append(productName);
-        stringBuilder.append(" is created. ");
 
-        if (manufacturer == null) {
-            manufacturerDAO.save(new ManufacturerRecord(manufacturerName));
-            stringBuilder.append("\nManufacturer ");
-            stringBuilder.append(manufacturerName);
-            stringBuilder.append(" is created.");
-        }
-        productDAO.save(product);
+        String answer = productService.saveProduct(productName, amount, manufacturerName);
+
         try (ServletOutputStream outputStream = resp.getOutputStream()) {
-            outputStream.write(stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+            outputStream.write(answer.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
         }
     }

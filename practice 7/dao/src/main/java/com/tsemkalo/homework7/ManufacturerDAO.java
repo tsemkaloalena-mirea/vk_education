@@ -1,28 +1,28 @@
 package com.tsemkalo.homework7;
 
-import generated.tables.records.ManufacturerRecord;
-import org.jetbrains.annotations.NotNull;
+import com.google.inject.Inject;
+import generated.tables.pojos.Manufacturer;
 import org.jooq.DSLContext;
 
 import static generated.Tables.MANUFACTURER;
 
 @SuppressWarnings({"NotNullNullableValidation", "SqlNoDataSourceInspection", "SqlResolve"})
 public final class ManufacturerDAO {
-    @NotNull
     private final DSLContext context;
 
-    public ManufacturerDAO(@NotNull DSLContext context) {
+    @Inject
+    public ManufacturerDAO(DSLContext context) {
         this.context = context;
     }
 
-    public ManufacturerRecord get(String name) {
+    public Manufacturer get(String name) {
         return context
                 .selectFrom(MANUFACTURER)
                 .where(MANUFACTURER.NAME.eq(name))
-                .fetchOne();
+                .fetchOneInto(Manufacturer.class);
     }
 
-    public void save(@NotNull ManufacturerRecord record) {
-        context.executeInsert(record);
+    public void save(Manufacturer manufacturer) {
+        context.executeInsert(context.newRecord(MANUFACTURER, manufacturer));
     }
 }

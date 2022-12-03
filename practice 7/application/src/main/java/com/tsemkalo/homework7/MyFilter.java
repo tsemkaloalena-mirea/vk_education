@@ -21,7 +21,7 @@ public final class MyFilter implements Filter {
     public void doFilter(ServletRequest request,
                          ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
-        final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         if (httpServletRequest.getMethod().equals("GET")) {
             chain.doFilter(request, response);
             return;

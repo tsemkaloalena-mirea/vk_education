@@ -19,10 +19,10 @@ public final class SecurityHandlerBuilder {
 
     private final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
 
-    public final ConstraintSecurityHandler build(LoginService loginService) {
+    public ConstraintSecurityHandler build(LoginService loginService) {
         securityHandler.setLoginService(loginService);
 
-        final List<ConstraintMapping> constraintMappings = new ArrayList<>();
+        List<ConstraintMapping> constraintMappings = new ArrayList<>();
         constraintMappings.addAll(constraintFullMapping(
                 buildConstraint(ROLE_MANAGER),
                 Collections.singletonList("/products")
@@ -40,7 +40,7 @@ public final class SecurityHandlerBuilder {
     }
 
     private static Constraint buildConstraint(String... userRoles) {
-        final Constraint starterConstraint = new Constraint();
+        Constraint starterConstraint = new Constraint();
         starterConstraint.setName(Constraint.__BASIC_AUTH);
         starterConstraint.setRoles(userRoles);
         starterConstraint.setAuthenticate(true);
@@ -62,7 +62,7 @@ public final class SecurityHandlerBuilder {
                                                                    String method) {
         return paths.stream()
                 .map(path -> {
-                            final ConstraintMapping mapping = new ConstraintMapping();
+                            ConstraintMapping mapping = new ConstraintMapping();
                             mapping.setConstraint(constraint);
                             mapping.setPathSpec(path);
                             mapping.setMethod(method);

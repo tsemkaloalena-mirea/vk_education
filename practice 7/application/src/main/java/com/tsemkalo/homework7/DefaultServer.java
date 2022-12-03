@@ -14,8 +14,8 @@ public final class DefaultServer {
     }
 
     public Server build(int port) {
-        final HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory();
-        final ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
+        HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory();
+        ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
         serverConnector.setHost("localhost");
         serverConnector.setPort(port);
         server.setConnectors(new Connector[]{serverConnector});
