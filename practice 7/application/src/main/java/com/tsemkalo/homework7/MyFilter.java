@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public final class MyFilter implements Filter {
 
@@ -27,19 +28,23 @@ public final class MyFilter implements Filter {
             return;
         }
         if (httpServletRequest.getMethod().equals("POST")) {
-            if (httpServletRequest.getParameter("productName") != null &&
-                    httpServletRequest.getParameter("amount") != null &&
-                    httpServletRequest.getParameter("manufacturerName") != null) {
-                try {
-                    Integer.parseInt(httpServletRequest.getParameter("amount"));
-                    chain.doFilter(request, response);
-                    return;
-                } catch (NumberFormatException exception) {
-                    exception.printStackTrace();
-                }
+            try {
+                Objects.requireNonNull(httpServletRequest.getParameter("productName"));
+                Objects.requireNonNull(httpServletRequest.getParameter("amount"));
+                Objects.requireNonNull(httpServletRequest.getParameter("manufacturerName"));
+            } catch (NullPointerException exception) {
+                exception.printStackTrace();
+                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+            try {
+                Integer.parseInt(httpServletRequest.getParameter("amount"));
+                chain.doFilter(request, response);
+                return;
+            } catch (NumberFormatException exception) {
+                exception.printStackTrace();
             }
         }
-
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
 
