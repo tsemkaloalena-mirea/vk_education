@@ -5,6 +5,7 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.util.security.Constraint;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,7 @@ public final class SecurityHandlerBuilder {
 
     private final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
 
-    public ConstraintSecurityHandler build(LoginService loginService) {
+    public ConstraintSecurityHandler build(@NotNull LoginService loginService) {
         securityHandler.setLoginService(loginService);
 
         List<ConstraintMapping> constraintMappings = new ArrayList<>();

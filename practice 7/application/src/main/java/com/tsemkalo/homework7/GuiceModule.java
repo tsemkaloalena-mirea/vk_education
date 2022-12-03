@@ -2,6 +2,7 @@ package com.tsemkalo.homework7;
 
 import com.google.inject.AbstractModule;
 import com.tsemkalo.homework7.db_init.JDBCCredentials;
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -11,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class GuiceModule extends AbstractModule {
+    @NotNull
     private static final JDBCCredentials CREDENTIALS = JDBCCredentials.DEFAULT;
 
     @Override

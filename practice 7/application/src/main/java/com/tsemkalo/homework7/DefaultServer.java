@@ -4,8 +4,10 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.jetbrains.annotations.NotNull;
 
 public final class DefaultServer {
+    @NotNull
     private final Server server = new Server();
     private static final int port = 3466;
 
