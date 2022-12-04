@@ -33,7 +33,7 @@ jooq {
                         isFluentSetters = true
                     }
                     target.apply {
-                        packageName = "generated"    //custom
+                        packageName = "com.tsemkalo.homework8.generated"    //custom
                         directory = "src/main/java"  //custom
                     }
                     strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"

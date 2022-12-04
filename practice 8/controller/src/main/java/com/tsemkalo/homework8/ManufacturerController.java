@@ -2,7 +2,7 @@ package com.tsemkalo.homework8;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import generated.tables.pojos.Product;
+import com.tsemkalo.homework8.generated.tables.pojos.Product;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.Consumes;
@@ -18,12 +18,12 @@ import java.util.List;
 @Path("/manufacturers")
 public final class ManufacturerController {
     private final ObjectMapper objectMapper;
-    private final ProductDAO productDAO;
+    private final ManufacturerService manufacturerService;
 
     @Inject
-    public ManufacturerController(ObjectMapper objectMapper, ProductDAO productDAO) {
+    public ManufacturerController(ObjectMapper objectMapper, ManufacturerService manufacturerService) {
         this.objectMapper = objectMapper;
-        this.productDAO = productDAO;
+        this.manufacturerService = manufacturerService;
     }
 
     @GET
@@ -31,7 +31,7 @@ public final class ManufacturerController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
     public Response getProductsByManufacturer(@PathParam("name") String name) {
-        List<Product> products = productDAO.getAllByManufacturer(name);
+        List<Product> products = manufacturerService.getProductsByManufacturer(name);
         if (!products.isEmpty()) {
             return Response.ok(
                     products

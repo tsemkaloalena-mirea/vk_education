@@ -1,14 +1,14 @@
 package com.tsemkalo.homework8;
 
 import com.google.inject.Inject;
-import generated.tables.pojos.Product;
+import com.tsemkalo.homework8.generated.tables.pojos.Product;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static generated.Tables.PRODUCT;
+import static com.tsemkalo.homework8.generated.Tables.PRODUCT;
 
 @SuppressWarnings({"NotNullNullableValidation", "SqlNoDataSourceInspection", "SqlResolve"})
 public final class ProductDAO {

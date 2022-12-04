@@ -1,11 +1,11 @@
 package com.tsemkalo.homework8;
 
 import com.google.inject.Inject;
-import generated.tables.pojos.Manufacturer;
+import com.tsemkalo.homework8.generated.tables.pojos.Manufacturer;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 
-import static generated.Tables.MANUFACTURER;
+import static com.tsemkalo.homework8.generated.Tables.MANUFACTURER;
 
 @SuppressWarnings({"NotNullNullableValidation", "SqlNoDataSourceInspection", "SqlResolve"})
 public final class ManufacturerDAO {

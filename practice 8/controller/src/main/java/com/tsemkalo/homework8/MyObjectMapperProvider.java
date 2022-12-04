@@ -8,11 +8,11 @@ import javax.ws.rs.ext.Provider;
 
 @SuppressWarnings("NotNullNullableValidation")
 @Provider
-public final class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
+public final class MyObjectMapperProvider implements ContextResolver<ObjectMapper> {
     final ObjectMapper defaultObjectMapper;
 
-    public ObjectMapperProvider() {
-        final ObjectMapper objectMapper = new ObjectMapper();
+    public MyObjectMapperProvider() {
+        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         this.defaultObjectMapper = objectMapper;
     }

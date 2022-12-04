@@ -68,7 +68,7 @@ public final class JacksonMessageBodyHandler<T> implements MessageBodyReader<T>,
                       MediaType mediaType,
                       MultivaluedMap<String, String> httpHeaders,
                       InputStream entityStream) throws IOException, WebApplicationException {
-        try (final InputStreamReader reader = new InputStreamReader(entityStream, StandardCharsets.UTF_8.name())) {
+        try (InputStreamReader reader = new InputStreamReader(entityStream, StandardCharsets.UTF_8.name())) {
             return objectMapper.readValue(reader, type);
         }
     }
@@ -89,12 +89,12 @@ public final class JacksonMessageBodyHandler<T> implements MessageBodyReader<T>,
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws WebApplicationException {
-        try (final PrintWriter printWriter =
+        try (PrintWriter printWriter =
                      new PrintWriter(new OutputStreamWriter(entityStream, StandardCharsets.UTF_8), true)) {
 
             ContextResolver<ObjectMapper> resolver = providers.getContextResolver(ObjectMapper.class, MediaType.APPLICATION_JSON_TYPE);
-            final ObjectMapper providedMapper = resolver.getContext(getClass());
-            final String json = providedMapper.writeValueAsString(t);
+            ObjectMapper providedMapper = resolver.getContext(getClass());
+            String json = providedMapper.writeValueAsString(t);
             printWriter.write(json);
         } catch (JsonProcessingException e) {
             throw new WebApplicationException(e);

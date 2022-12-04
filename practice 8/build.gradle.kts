@@ -40,9 +40,7 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok:1.18.24")
         implementation("com.intellij:annotations:12.0")
 
-//        implementation("javax.xml.bind:jaxb-api:2.3.1")
         implementation("javax.ws.rs:javax.ws.rs-api:2.1.1")
-//        compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")

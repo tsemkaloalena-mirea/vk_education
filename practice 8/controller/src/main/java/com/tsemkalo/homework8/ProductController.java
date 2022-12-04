@@ -2,8 +2,7 @@ package com.tsemkalo.homework8;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import generated.tables.pojos.Manufacturer;
-import generated.tables.pojos.Product;
+import com.tsemkalo.homework8.generated.tables.pojos.Product;
 import org.eclipse.jetty.http.HttpStatus;
 
 import javax.ws.rs.Consumes;
@@ -21,21 +20,19 @@ import java.util.stream.Collectors;
 @Path("/products")
 public final class ProductController {
     private final ObjectMapper objectMapper;
-    private final ProductDAO productDAO;
-    private final ManufacturerDAO manufacturerDAO;
+    private final ProductService productService;
 
     @Inject
-    public ProductController(ProductDAO productDAO, ManufacturerDAO manufacturerDAO, ObjectMapper objectMapper) {
+    public ProductController(ProductService productService, ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.productDAO = productDAO;
-        this.manufacturerDAO = manufacturerDAO;
+        this.productService = productService;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProducts() {
         return Response.ok(
-                productDAO.all()
+                productService.getAll()
         ).header(HttpHeaders.CACHE_CONTROL, "no-cache").build();
     }
 
@@ -43,26 +40,14 @@ public final class ProductController {
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
     public String save(Product product) {
-        StringBuilder answer = new StringBuilder();
-        answer.append("Product ");
-        answer.append(product.getName());
-        answer.append(" is created. ");
-        Manufacturer manufacturer = manufacturerDAO.get(product.getManufacturerName());
-        if (manufacturer == null) {
-            manufacturerDAO.save(new Manufacturer(product.getManufacturerName()));
-            answer.append("\nManufacturer ");
-            answer.append(product.getManufacturerName());
-            answer.append(" is created.");
-        }
-        productDAO.save(product);
-        return answer.toString();
+        return productService.save(product);
     }
 
     @POST
     @Path("/{name}/delete")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response deleteProduct(@PathParam("name") String productName) {
-        List<Integer> productIds = productDAO.deleteByName(productName);
+    public Response deleteProducts(@PathParam("name") String productName) {
+        List<Integer> productIds = productService.deleteProductsByName(productName);
         if (productIds != null) {
             return Response.ok(
                             "Products with ids " + productIds.stream().map(String::valueOf).collect(Collectors.joining(", ")) + " are deleted"

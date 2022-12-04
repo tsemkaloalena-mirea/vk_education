@@ -1,4 +1,4 @@
-package com.tsemkalo.homework8;
+package com.tsemkalo.homework8.db_init;
 
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public final class DBInitializer {
 
     public static void initDb(@NotNull JDBCCredentials CREDENTIALS) {
-        final Flyway flyway = Flyway.configure()
+        Flyway flyway = Flyway.configure()
                 .dataSource(
                         CREDENTIALS.url(),
                         CREDENTIALS.login(),
