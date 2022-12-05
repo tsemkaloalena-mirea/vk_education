@@ -16,7 +16,6 @@ public final class CommonController {
     @Path("/description")
     @Produces(MediaType.TEXT_HTML)
     public InputStream getDescription() {
-        InputStream inputStream = CommonController.class.getResourceAsStream("/static/description");
-        return inputStream;
+        return CommonController.class.getResourceAsStream("/static/description");
     }
 }
