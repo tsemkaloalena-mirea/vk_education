@@ -47,6 +47,7 @@ public final class GuiceListener extends GuiceResteasyBootstrapServletContextLis
             bind(ManufacturerDAO.class);
             bind(ProductController.class);
             bind(ManufacturerController.class);
+            bind(CommonController.class);
         }
     }
 }

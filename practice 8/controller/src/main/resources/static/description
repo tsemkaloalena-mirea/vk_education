@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Description</title></head>
+<body>
+<h1>Description</h1>
+<h2>Request examples</h2>
+<p><b>POST http://localhost:3466/products?productName=prod1&amount=8&manufacturerName=m1</b></p>
+<p>Will add product with given parameters. If some parameters are not set or are not correct, request will be
+    denied.</p>
+<p>This request is available for managers only.</p>
+<br>
+<p><b>GET http://localhost:3466/products</b></p>
+<p>Will show you all products in database.</p>
+<p>This request is available for managers and guests.</p>
+</body>
+</html>
