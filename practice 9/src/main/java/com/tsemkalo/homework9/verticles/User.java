@@ -50,6 +50,7 @@ public final class User extends Participant {
     }
 
     private void sendJoinRequest(Long clanId) {
+        System.out.println("User " + getParticipantInfo().getName() + " is trying to join clan " + clanId + "...");
         vertx.eventBus().request(JOIN_REQUEST + clanId, getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
                 System.out.println(reply.result().body());

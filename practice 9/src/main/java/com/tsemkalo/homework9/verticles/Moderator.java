@@ -2,6 +2,7 @@ package com.tsemkalo.homework9.verticles;
 
 import com.tsemkalo.homework9.info.ClanInfo;
 import com.tsemkalo.homework9.info.ParticipantInfo;
+import io.vertx.core.eventbus.MessageConsumer;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public final class Moderator extends Participant {
     }
 
     private void joinClan() {
+        System.out.println("Moderator " + getParticipantInfo().getName() + " is trying to connect to clan " + getParticipantInfo().getClanId() + "...");
         vertx.eventBus().request(ADD_MODERATOR + getParticipantInfo().getClanId(), getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
                 System.out.println(reply.result().body());
@@ -45,7 +47,9 @@ public final class Moderator extends Participant {
     // TODO зачем promise.complete()
     // TODO понять какому модератору доставится сообщение
     public void addUsersToClan() {
-        vertx.eventBus().<Long>consumer(JOIN_REQUEST + getParticipantInfo().getClanId(), event -> {
+        MessageConsumer<Long> consumer = vertx.eventBus().<Long>consumer(JOIN_REQUEST + getParticipantInfo().getClanId());
+        consumer.setMaxBufferedMessages(1);
+        consumer.handler(event -> {
             Long userId = event.body();
             vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                     map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
@@ -61,7 +65,9 @@ public final class Moderator extends Participant {
                             event.fail(-1, "There are no free places for users");
                             System.out.println("There are no free places for users");
                         }
+                        consumer.resume();
                     }));
         });
+        consumer.pause().fetch(1);
     }
 }

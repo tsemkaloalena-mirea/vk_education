@@ -12,12 +12,27 @@
             "clanId": 1,
             "maxModeratorsNumber": 3,
             "maxUsersNumber": 4
+        },
+        {
+            "name": "adm3",
+            "clanId": 2,
+            "maxModeratorsNumber": 3,
+            "maxUsersNumber": 3
         }
     ],
     "moderators": [
         {
             "name": "moderator1",
             "clanId": 1
+        },{
+            "name": "moderator2",
+            "clanId": 1
+        },{
+            "name": "moderator3",
+            "clanId": 1
+        },{
+            "name": "moderator4",
+            "clanId": 2
         }
 
     ],
