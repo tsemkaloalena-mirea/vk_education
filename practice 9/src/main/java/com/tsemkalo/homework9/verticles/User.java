@@ -39,9 +39,13 @@ public final class User extends Participant {
         );
 
         vertx.eventBus().consumer(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), event -> {
-            vertx.sharedData().<Long, ParticipantInfo>getAsyncMap(PARTICIPANTS_MAP, map ->
-                    map.result().remove(getParticipantInfo().getId()));
-            subscribe();
+            System.out.println(1);
+            vertx.sharedData().<Long, ParticipantInfo>getAsyncMap(PARTICIPANTS_MAP, map -> {
+                map.result().remove(getParticipantInfo().getId(), complete -> {
+                    System.out.println("User " + getParticipantInfo().getName() + " is unconnected from clan " + getParticipantInfo().getClanId());
+                    subscribe();
+                });
+            });
         });
 
         vertx.eventBus().consumer(GREETING + getParticipantInfo().getId(), event -> {
@@ -53,12 +57,14 @@ public final class User extends Participant {
         System.out.println("User " + getParticipantInfo().getName() + " is trying to join clan " + clanId + "...");
         vertx.eventBus().request(JOIN_REQUEST + clanId, getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
-                System.out.println(reply.result().body());
+                System.out.println(getParticipantInfo().getName() + reply.result().body());
                 getParticipantInfo().setClanId(clanId);
                 addParticipantToMap();
                 sendMessageToRandomUser();
             } else {
-                vertx.setTimer(10_000L, timer -> {
+                System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
+                System.out.println(getParticipantInfo().getName() + ", your join request will be repeated in 10 seconds");
+                vertx.setTimer(2_000L, timer -> {
                     if (ThreadLocalRandom.current().nextBoolean()) {
                         subscribe();
                     }

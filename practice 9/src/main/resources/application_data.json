@@ -5,7 +5,7 @@
             "name": "adm1",
             "clanId": 1,
             "maxModeratorsNumber": 2,
-            "maxUsersNumber": 5
+            "maxUsersNumber": 2
         },
         {
             "name": "adm2",
@@ -17,45 +17,69 @@
             "name": "adm3",
             "clanId": 2,
             "maxModeratorsNumber": 3,
-            "maxUsersNumber": 3
+            "maxUsersNumber": 5
         }
     ],
     "moderators": [
         {
             "name": "moderator1",
             "clanId": 1
-        },{
+        },
+        {
             "name": "moderator2",
             "clanId": 1
-        },{
+        },
+        {
             "name": "moderator3",
             "clanId": 1
-        },{
+        },
+        {
             "name": "moderator4",
+            "clanId": 1
+        },
+        {
+            "name": "moderator5",
+            "clanId": 2
+        },
+        {
+            "name": "moderator6",
             "clanId": 2
         }
-
     ],
     "users": [
         {
             "name": "usr1",
             "messageDelay": 10000
-        },
-        {
+        }, {
             "name": "usr2",
             "messageDelay": 5000
-        },
-        {
+        }, {
             "name": "usr3",
             "messageDelay": 15000
-        },
-        {
+        }, {
             "name": "usr4",
             "messageDelay": 20000
-        },
-        {
+        }, {
             "name": "usr5",
             "messageDelay": 8000
+        }, {
+            "name": "usr6",
+            "messageDelay": 30000
+        }, {
+            "name": "usr7",
+            "messageDelay": 60000
+        }, {
+            "name": "usr8",
+            "messageDelay": 120000
+        }, {
+            "name": "usr9",
+            "messageDelay": 180000
+        }, {
+            "name": "usr10",
+            "messageDelay": 240000
+        }, {
+            "name": "usr11",
+            "messageDelay": 300000
         }
     ]
 }

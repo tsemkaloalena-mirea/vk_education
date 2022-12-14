@@ -38,18 +38,18 @@ public final class Moderator extends Participant {
         System.out.println("Moderator " + getParticipantInfo().getName() + " is trying to connect to clan " + getParticipantInfo().getClanId() + "...");
         vertx.eventBus().request(ADD_MODERATOR + getParticipantInfo().getClanId(), getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
-                System.out.println(reply.result().body());
+                System.out.println(getParticipantInfo().getName() + " " + reply.result().body());
                 addParticipantToMap();
+            } else {
+                System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
             }
         });
     }
 
-    // TODO зачем promise.complete()
-    // TODO понять какому модератору доставится сообщение
     public void addUsersToClan() {
         MessageConsumer<Long> consumer = vertx.eventBus().<Long>consumer(JOIN_REQUEST + getParticipantInfo().getClanId());
-        consumer.setMaxBufferedMessages(1);
         consumer.handler(event -> {
+            consumer.pause();
             Long userId = event.body();
             vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                     map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
@@ -58,16 +58,15 @@ public final class Moderator extends Participant {
                             userIds.add(userId);
                             ClanInfo info = clanInfo.result();
                             info.setUsers(userIds);
-                            map.result().put(clanInfo.result().getId(), info);
-                            event.reply("User with id " + userId + " joined the clan " + getParticipantInfo().getClanId());
+                            map.result().put(clanInfo.result().getId(), info, result ->
+                                    event.reply(" (#" + userId + ") joined the clan " + getParticipantInfo().getClanId())
+                            );
                         } else {
+                            event.fail(-1, " (#" + userId + "): Clan " + getParticipantInfo().getClanId() + " has no free places for users");
                             vertx.eventBus().send(TOO_MANY_USERS + getParticipantInfo().getClanId(), null);
-                            event.fail(-1, "There are no free places for users");
-                            System.out.println("There are no free places for users");
                         }
                         consumer.resume();
                     }));
         });
-        consumer.pause().fetch(1);
     }
 }

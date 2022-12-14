@@ -15,6 +15,7 @@ import static com.tsemkalo.homework9.verticles.Names.CLAN_MAP;
 import static com.tsemkalo.homework9.verticles.Names.NEED_TO_RECONNECT;
 import static com.tsemkalo.homework9.verticles.Names.SET_ADMIN;
 import static com.tsemkalo.homework9.verticles.Names.TOO_MANY_USERS;
+import static com.tsemkalo.homework9.verticles.Names.TURN_OFF_ADMIN;
 
 public final class Administrator extends Participant {
     private final JsonObject clanData;
@@ -37,6 +38,7 @@ public final class Administrator extends Participant {
         );
         addModerators();
         handleIfTooManyUsers();
+        handleIfBecomeOffline();
     }
 
     private void joinClan() {
@@ -44,7 +46,7 @@ public final class Administrator extends Participant {
         vertx.eventBus().request(SET_ADMIN + getParticipantInfo().getClanId(), getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
                 addParticipantToMap();
-                System.out.println(reply.result().body());
+                System.out.println(getParticipantInfo().getName() + reply.result().body());
                 vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                         map.result().get(getParticipantInfo().getClanId(), getResult -> {
                             ClanInfo clanInfo = getResult.result();
@@ -62,35 +64,35 @@ public final class Administrator extends Participant {
                             vertx.eventBus().publish(ADMIN_IS_SET + getParticipantInfo().getClanId(), null);
                         })
                 );
-            }
-            else {
-                System.out.println(reply.cause().getMessage());
+            } else {
+                System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
             }
         });
     }
 
     private void addModerators() {
         MessageConsumer<Long> consumer = vertx.eventBus().<Long>consumer(ADD_MODERATOR + getParticipantInfo().getClanId());
-        consumer.setMaxBufferedMessages(1);
         consumer.handler(event -> {
+            consumer.pause();
             Long moderatorId = event.body();
             vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                     map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
-                        if (clanInfo.result().getModerators().size() < clanInfo.result().getMaxModeratorsNumber()) {
-                            List<Long> moderatorIds = clanInfo.result().getModerators();
+                        ClanInfo info = clanInfo.result();
+                        List<Long> moderatorIds = info.getModerators();
+                        if (moderatorIds.size() < info.getMaxModeratorsNumber()) {
                             moderatorIds.add(moderatorId);
-                            ClanInfo info = clanInfo.result();
                             info.setModerators(moderatorIds);
-                            map.result().put(clanInfo.result().getId(), info);
-                            event.reply("Participant with id " + moderatorId + " is a moderator of clan " + getParticipantInfo().getClanId());
+                            map.result().put(clanInfo.result().getId(), info, result -> {
+                                event.reply("(#" + moderatorId + ") is a moderator of clan " + getParticipantInfo().getClanId());
+                                consumer.resume();
+                            });
                         } else {
-                            event.fail(-1, "Access denied for moderator with id " + moderatorId + ": Clan " + getParticipantInfo().getClanId() + " has no free places for moderators");
+                            event.fail(-1, " (#" + moderatorId + "): Clan " + getParticipantInfo().getClanId() + " has no free places for moderators");
+                            consumer.resume();
                         }
-                        consumer.resume();
                     })
             );
         });
-        consumer.pause().fetch(1);
     }
 
     private void handleIfTooManyUsers() {
@@ -99,10 +101,26 @@ public final class Administrator extends Participant {
                     map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
                         ClanInfo info = clanInfo.result();
                         info.setUsers(new ArrayList<>());
-                        map.result().put(clanInfo.result().getId(), info);
-                        // TODO clear user's clanId
+                        // TODO fix error
+                        map.result().put(clanInfo.result().getId(), info, result -> {
+                            System.out.println("Clan " + getParticipantInfo().getClanId() + " has too many users. Everybody needs to reconnect");
+                            vertx.eventBus().publish(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), null);
+                        });
                     }));
-            vertx.eventBus().publish(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), null);
+        });
+    }
+
+    private void handleIfBecomeOffline() {
+        vertx.eventBus().consumer(TURN_OFF_ADMIN + getParticipantInfo().getId(), event -> {
+            vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
+                    map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
+                        ClanInfo info = clanInfo.result();
+                        info.setIsActive(false);
+                        System.out.println("Administrator " + getParticipantInfo().getName() + " is offline now, so clan is inactive");
+                        map.result().put(info.getId(), info, result -> {
+                            vertx.eventBus().publish(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), null);
+                        });
+                    }));
         });
     }
 }

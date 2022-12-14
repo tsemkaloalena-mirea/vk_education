@@ -11,4 +11,6 @@ public final class Names {
     public static String JOIN_REQUEST = "user-join-request";
     public static String TOO_MANY_USERS = "max-users-number-exceeded";
     public static String NEED_TO_RECONNECT = "all-users-need-to-reconnect";
+    public static String TURN_OFF_ADMIN = "admin-is-offline";
+//    public static String WHAT_IS_YOUR_NAME = "get-participant-name-by-id";
 }

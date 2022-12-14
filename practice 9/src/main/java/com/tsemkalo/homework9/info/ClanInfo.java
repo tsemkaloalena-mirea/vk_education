@@ -18,8 +18,8 @@ public final class ClanInfo implements Serializable {
 
     public ClanInfo(Long id) {
         this.id = id;
-        maxUsersNumber = 10;
-        maxModeratorsNumber = 10;
+        maxUsersNumber = 0;
+        maxModeratorsNumber = 0;
         users = new ArrayList<>();
         moderators = new ArrayList<>();
         administratorId = -1L;

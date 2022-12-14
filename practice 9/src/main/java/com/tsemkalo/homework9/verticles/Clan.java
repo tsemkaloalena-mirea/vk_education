@@ -46,24 +46,25 @@ public final class Clan extends AbstractVerticle implements Serializable {
 
     private MessageConsumer<Long> lookForAdmin() {
         MessageConsumer<Long> consumer = vertx.eventBus().<Long>consumer(SET_ADMIN + this.id);
-        consumer.setMaxBufferedMessages(1);
         consumer.handler(event -> {
+            consumer.pause();
             Long adminId = event.body();
             vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map -> {
                 map.result().get(this.id, getResult -> {
                     ClanInfo clanInfo = getResult.result();
                     if (!clanInfo.getAdministratorId().equals(-1L)) {
-                        event.fail(-1, "Access denied for admin with id " + adminId + ": Clan " + this.id + " already has admin");
+                        consumer.resume();
+                        event.fail(-1, " (#" + adminId + "): Clan " + this.id + " already has admin");
                     } else {
                         clanInfo.setAdministratorId(adminId);
-                        map.result().put(this.id, clanInfo);
-                        event.reply("Admin with id " + adminId + " is admin of clan with id " + this.id);
+                        map.result().put(this.id, clanInfo, complete -> {
+                            consumer.resume();
+                            event.reply(" (#" + adminId + ") is admin of clan with id " + this.id);
+                        });
                     }
-                    consumer.resume();
                 });
             });
         });
-        consumer.pause().fetch(1);
         return consumer;
     }
 

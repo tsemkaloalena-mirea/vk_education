@@ -26,7 +26,7 @@ public final class ClanLauncher {
             run(clansAmount);
         }
     }
-// TODO общий лаунчер
+
     public static void run(int n) {
         Vertx.clusteredVertx(
                 new VertxOptions(),
