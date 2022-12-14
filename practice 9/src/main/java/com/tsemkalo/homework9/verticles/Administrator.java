@@ -45,7 +45,7 @@ public final class Administrator extends Participant {
         System.out.println("Admin " + getParticipantInfo().getName() + " is trying to connect to clan " + getParticipantInfo().getClanId() + "...");
         vertx.eventBus().request(SET_ADMIN + getParticipantInfo().getClanId(), getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
-                addParticipantToMap();
+                putParticipantToMap();
                 System.out.println(getParticipantInfo().getName() + reply.result().body());
                 vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                         map.result().get(getParticipantInfo().getClanId(), getResult -> {
@@ -101,8 +101,7 @@ public final class Administrator extends Participant {
                     map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
                         ClanInfo info = clanInfo.result();
                         info.setUsers(new ArrayList<>());
-                        // TODO fix error
-                        map.result().put(clanInfo.result().getId(), info, result -> {
+                        map.result().put(info.getId(), info, result -> {
                             System.out.println("Clan " + getParticipantInfo().getClanId() + " has too many users. Everybody needs to reconnect");
                             vertx.eventBus().publish(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), null);
                         });

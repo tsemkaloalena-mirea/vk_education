@@ -10,14 +10,14 @@
         {
             "name": "adm2",
             "clanId": 1,
-            "maxModeratorsNumber": 3,
-            "maxUsersNumber": 4
+            "maxModeratorsNumber": 2,
+            "maxUsersNumber": 2
         },
         {
             "name": "adm3",
             "clanId": 2,
             "maxModeratorsNumber": 3,
-            "maxUsersNumber": 5
+            "maxUsersNumber": 15
         }
     ],
     "moderators": [

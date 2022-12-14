@@ -22,13 +22,11 @@ public final class Moderator extends Participant {
     public void subscribe() {
         vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                 map.result().entries(clans -> {
-                    if (clans.result().containsKey(getParticipantInfo().getClanId())) {
-                        if (!clans.result().get(getParticipantInfo().getClanId()).getAdministratorId().equals(-1L)) {
-                            joinClan();
-                            return;
-                        }
+                    if (clans.result().containsKey(getParticipantInfo().getClanId()) && !clans.result().get(getParticipantInfo().getClanId()).getAdministratorId().equals(-1L)) {
+                        joinClan();
+                    } else {
+                        vertx.eventBus().consumer(ADMIN_IS_SET + getParticipantInfo().getClanId(), event -> joinClan());
                     }
-                    vertx.eventBus().consumer(ADMIN_IS_SET + getParticipantInfo().getClanId(), event -> joinClan());
                 })
         );
         addUsersToClan();
@@ -39,7 +37,7 @@ public final class Moderator extends Participant {
         vertx.eventBus().request(ADD_MODERATOR + getParticipantInfo().getClanId(), getParticipantInfo().getId(), reply -> {
             if (reply.succeeded()) {
                 System.out.println(getParticipantInfo().getName() + " " + reply.result().body());
-                addParticipantToMap();
+                putParticipantToMap();
             } else {
                 System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
             }
@@ -51,22 +49,33 @@ public final class Moderator extends Participant {
         consumer.handler(event -> {
             consumer.pause();
             Long userId = event.body();
-            vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
-                    map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
-                        if (clanInfo.result().getIsActive() && clanInfo.result().getUsers().size() < clanInfo.result().getMaxUsersNumber()) {
-                            List<Long> userIds = clanInfo.result().getUsers();
-                            userIds.add(userId);
-                            ClanInfo info = clanInfo.result();
-                            info.setUsers(userIds);
-                            map.result().put(clanInfo.result().getId(), info, result ->
-                                    event.reply(" (#" + userId + ") joined the clan " + getParticipantInfo().getClanId())
-                            );
-                        } else {
-                            event.fail(-1, " (#" + userId + "): Clan " + getParticipantInfo().getClanId() + " has no free places for users");
-                            vertx.eventBus().send(TOO_MANY_USERS + getParticipantInfo().getClanId(), null);
-                        }
+            vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map -> {
+                map.result().entries(clans -> {
+                    ClanInfo clanInfo = clans.result().get(getParticipantInfo().getClanId());
+                    if (clanInfo.getIsActive() && clanInfo.getUsers().size() < clanInfo.getMaxUsersNumber()) {
+                        List<Long> userIds = clanInfo.getUsers();
+                        userIds.add(userId);
+                        clanInfo.setUsers(userIds);
+                        map.result().put(clanInfo.getId(), clanInfo, result -> {
+                            event.reply(" (#" + userId + ") joined the clan " + getParticipantInfo().getClanId());
+                            printClansUsers(clans.result().values().stream().toList());
+                            consumer.resume();
+                        });
+                    } else {
+                        event.fail(-1, " (#" + userId + "): Clan " + getParticipantInfo().getClanId() + " has no free places for users");
+                        vertx.eventBus().send(TOO_MANY_USERS + getParticipantInfo().getClanId(), null);
                         consumer.resume();
-                    }));
+                    }
+                });
+            });
         });
+    }
+
+    private void printClansUsers(List<ClanInfo> clans) {
+        System.out.println("________Moderator#" + getParticipantInfo().getId() + "_______________________");
+        for (ClanInfo info : clans) {
+            System.out.println("Users ids of clan " + info.getId() + ": " + info.getUsers());
+        }
+        System.out.println("_______________________________");
     }
 }

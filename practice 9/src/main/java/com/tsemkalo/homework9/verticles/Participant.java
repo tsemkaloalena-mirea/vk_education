@@ -26,6 +26,7 @@ abstract public class Participant extends AbstractVerticle {
             if (counter.succeeded()) {
                 counter.result().incrementAndGet(number -> {
                     getParticipantInfo().setId(number.result());
+                    System.out.println(getClass().getSimpleName() + " " + getParticipantInfo().getName() + " is added and has id " + getParticipantInfo().getId());
                     subscribe();
                 });
             }
@@ -34,11 +35,9 @@ abstract public class Participant extends AbstractVerticle {
 
     abstract public void subscribe();
 
-    public void addParticipantToMap() {
+    public void putParticipantToMap() {
         vertx.sharedData().<Long, ParticipantInfo>getAsyncMap(PARTICIPANTS_MAP, map ->
-                map.result().put(getParticipantInfo().getId(), getParticipantInfo(),
-                        adminCompletion -> System.out.println(getClass().getSimpleName() + " " + getParticipantInfo().getName() + " is added and has id " + getParticipantInfo().getId())
-                )
+                map.result().put(getParticipantInfo().getId(), getParticipantInfo())
         );
     }
 

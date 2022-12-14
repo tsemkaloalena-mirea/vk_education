@@ -3,6 +3,7 @@ package com.tsemkalo.homework9.verticles;
 import com.google.gson.JsonObject;
 import com.tsemkalo.homework9.info.ClanInfo;
 import com.tsemkalo.homework9.info.ParticipantInfo;
+import io.vertx.core.eventbus.MessageConsumer;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,7 +15,7 @@ import static com.tsemkalo.homework9.verticles.Names.NEED_TO_RECONNECT;
 import static com.tsemkalo.homework9.verticles.Names.PARTICIPANTS_MAP;
 
 public final class User extends Participant {
-    private Long messageDelay;
+    private final Long messageDelay;
 
     public User(ParticipantInfo participantInfo, JsonObject additionalInfo) {
         super(participantInfo);
@@ -23,6 +24,13 @@ public final class User extends Participant {
 
     @Override
     public void subscribe() {
+        joinClan();
+        vertx.eventBus().consumer(GREETING + getParticipantInfo().getId(), event -> {
+            System.out.println(event.body() + getParticipantInfo().getName());
+        });
+    }
+
+    private void joinClan() {
         System.out.println(getParticipantInfo().getName() + " wants to join some clan");
         vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                 map.result().entries(clans -> {
@@ -37,20 +45,6 @@ public final class User extends Participant {
                     }
                 })
         );
-
-        vertx.eventBus().consumer(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), event -> {
-            System.out.println(1);
-            vertx.sharedData().<Long, ParticipantInfo>getAsyncMap(PARTICIPANTS_MAP, map -> {
-                map.result().remove(getParticipantInfo().getId(), complete -> {
-                    System.out.println("User " + getParticipantInfo().getName() + " is unconnected from clan " + getParticipantInfo().getClanId());
-                    subscribe();
-                });
-            });
-        });
-
-        vertx.eventBus().consumer(GREETING + getParticipantInfo().getId(), event -> {
-            System.out.println(event.body() + getParticipantInfo().getName());
-        });
     }
 
     private void sendJoinRequest(Long clanId) {
@@ -59,21 +53,23 @@ public final class User extends Participant {
             if (reply.succeeded()) {
                 System.out.println(getParticipantInfo().getName() + reply.result().body());
                 getParticipantInfo().setClanId(clanId);
-                addParticipantToMap();
+                putParticipantToMap();
                 sendMessageToRandomUser();
+                handleIfReconnectNeeded();
             } else {
                 System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
-                System.out.println(getParticipantInfo().getName() + ", your join request will be repeated in 10 seconds");
-                vertx.setTimer(2_000L, timer -> {
+                System.out.println(getParticipantInfo().getName() + ", your join request will be repeated in 5 seconds");
+                vertx.setPeriodic(5_000L, timer -> {
                     if (ThreadLocalRandom.current().nextBoolean()) {
-                        subscribe();
+                        sendJoinRequest(clanId);
+                        vertx.cancelTimer(timer);
                     }
                 });
             }
         });
     }
 
-    public void sendMessageToRandomUser() {
+    private void sendMessageToRandomUser() {
         vertx.setPeriodic(messageDelay, timer ->
                 vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                         map.result().get(getParticipantInfo().getClanId(), getResult -> {
@@ -87,5 +83,18 @@ public final class User extends Participant {
                         )
                 )
         );
+    }
+
+    private void handleIfReconnectNeeded() {
+        MessageConsumer<Object> consumer = vertx.eventBus().consumer(NEED_TO_RECONNECT + getParticipantInfo().getClanId());
+        consumer.handler(event -> {
+            vertx.sharedData().<Long, ParticipantInfo>getAsyncMap(PARTICIPANTS_MAP, map -> {
+                map.result().remove(getParticipantInfo().getId(), complete -> {
+                    System.out.println("User " + getParticipantInfo().getName() + " is unconnected from clan " + getParticipantInfo().getClanId());
+                    consumer.pause();
+                    joinClan();
+                });
+            });
+        });
     }
 }
