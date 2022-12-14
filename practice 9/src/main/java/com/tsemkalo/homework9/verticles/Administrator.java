@@ -54,7 +54,7 @@ public final class Administrator extends Participant {
                             int maxModeratorsNumber = clanData.get("maxModeratorsNumber").getAsInt();
                             clanInfo.setMaxUsersNumber(maxUsersNumber);
                             clanInfo.setMaxModeratorsNumber(maxModeratorsNumber);
-                            clanInfo.setIsActive(true); // TODO turn on / off
+                            clanInfo.setIsActive(true);
                             map.result().put(getParticipantInfo().getClanId(), clanInfo,
                                     completion -> {
                                         System.out.println("Max users number for clan " + getParticipantInfo().getClanId() + " is set to " + maxUsersNumber);

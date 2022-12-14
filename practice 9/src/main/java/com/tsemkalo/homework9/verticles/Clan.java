@@ -77,7 +77,7 @@ public final class Clan extends AbstractVerticle implements Serializable {
         @Override
         public String prefix() {
             return "clan_game";
-        } // TODO понять
+        }
 
 
         @Override

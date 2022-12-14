@@ -17,7 +17,6 @@ public final class Moderator extends Participant {
         super(participantInfo);
     }
 
-    // TODO undeploy for everybody
     @Override
     public void subscribe() {
         vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
