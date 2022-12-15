@@ -5,6 +5,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 
+// При запуске этого лаунчера админ выйдет из сети
 public class AdminStopperLauncher {
     public static void main(String[] args) {
         Vertx.clusteredVertx(
