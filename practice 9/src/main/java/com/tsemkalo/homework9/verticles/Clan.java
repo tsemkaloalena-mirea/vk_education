@@ -1,7 +1,6 @@
 package com.tsemkalo.homework9.verticles;
 
 import com.tsemkalo.homework9.info.ClanInfo;
-import com.tsemkalo.homework9.info.ParticipantInfo;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.Verticle;
@@ -78,7 +77,6 @@ public final class Clan extends AbstractVerticle implements Serializable {
         public String prefix() {
             return "clan_game";
         }
-
 
         @Override
         public void createVerticle(String verticleName,

@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tsemkalo.homework9.info.ParticipantInfo;
 import com.tsemkalo.homework9.verticles.Moderator;
-import com.tsemkalo.homework9.verticles.Participant;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -26,7 +25,6 @@ public final class ModeratorLauncher {
             JsonArray moderators = tree.get("moderators").getAsJsonArray();
             for (JsonElement element : moderators) {
                 JsonObject info = element.getAsJsonObject();
-
                 ParticipantInfo participantInfo = new ParticipantInfo(info.get("name").getAsString());
                 participantInfo.setClanId(info.get("clanId").getAsLong());
                 run(participantInfo);

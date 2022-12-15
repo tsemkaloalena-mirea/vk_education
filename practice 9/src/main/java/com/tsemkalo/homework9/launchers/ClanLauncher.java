@@ -1,10 +1,7 @@
 package com.tsemkalo.homework9.launchers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.tsemkalo.homework9.info.ParticipantInfo;
 import com.tsemkalo.homework9.verticles.Clan;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;

@@ -49,10 +49,10 @@
     "users": [
         {
             "name": "usr1",
-            "messageDelay": 10000
+            "messageDelay": 20000
         }, {
             "name": "usr2",
-            "messageDelay": 5000
+            "messageDelay": 30000
         }, {
             "name": "usr3",
             "messageDelay": 15000
@@ -61,7 +61,7 @@
             "messageDelay": 20000
         }, {
             "name": "usr5",
-            "messageDelay": 8000
+            "messageDelay": 18000
         }, {
             "name": "usr6",
             "messageDelay": 30000

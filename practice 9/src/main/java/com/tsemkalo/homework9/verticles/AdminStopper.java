@@ -15,5 +15,4 @@ public class AdminStopper extends AbstractVerticle {
     public void start() {
         vertx.eventBus().send(TURN_OFF_ADMIN + this.adminId, null);
     }
-
 }

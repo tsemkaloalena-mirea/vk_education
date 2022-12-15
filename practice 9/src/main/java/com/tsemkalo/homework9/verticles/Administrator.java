@@ -115,6 +115,7 @@ public final class Administrator extends Participant {
                     map.result().get(getParticipantInfo().getClanId(), clanInfo -> {
                         ClanInfo info = clanInfo.result();
                         info.setIsActive(false);
+                        info.setUsers(new ArrayList<>());
                         System.out.println("Administrator " + getParticipantInfo().getName() + " is offline now, so clan is inactive");
                         map.result().put(info.getId(), info, result -> {
                             vertx.eventBus().publish(NEED_TO_RECONNECT + getParticipantInfo().getClanId(), null);

@@ -57,7 +57,6 @@ public final class Moderator extends Participant {
                         clanInfo.setUsers(userIds);
                         map.result().put(clanInfo.getId(), clanInfo, result -> {
                             event.reply(" (#" + userId + ") joined the clan " + getParticipantInfo().getClanId());
-                            printClansUsers(clans.result().values().stream().toList());
                             consumer.resume();
                         });
                     } else {
@@ -68,13 +67,5 @@ public final class Moderator extends Participant {
                 });
             });
         });
-    }
-
-    private void printClansUsers(List<ClanInfo> clans) {
-        System.out.println("________Moderator#" + getParticipantInfo().getId() + "_______________________");
-        for (ClanInfo info : clans) {
-            System.out.println("Users ids of clan " + info.getId() + ": " + info.getUsers());
-        }
-        System.out.println("_______________________________");
     }
 }
