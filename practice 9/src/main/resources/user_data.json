@@ -1,0 +1,68 @@
+[
+    {
+        "participantInfo": {
+            "name": "usr1"
+        },
+        "messageDelay": 20000
+    },
+    {
+        "participantInfo": {
+            "name": "usr2"
+        },
+        "messageDelay": 30000
+    },
+    {
+        "participantInfo": {
+            "name": "usr3"
+        },
+        "messageDelay": 15000
+    },
+    {
+        "participantInfo": {
+            "name": "usr4"
+        },
+        "messageDelay": 20000
+    },
+    {
+        "participantInfo": {
+            "name": "usr5"
+        },
+        "messageDelay": 18000
+    },
+    {
+        "participantInfo": {
+            "name": "usr6"
+        },
+        "messageDelay": 30000
+    },
+    {
+        "participantInfo": {
+            "name": "usr7"
+        },
+        "messageDelay": 60000
+    },
+    {
+        "participantInfo": {
+            "name": "usr8"
+        },
+        "messageDelay": 120000
+    },
+    {
+        "participantInfo": {
+            "name": "usr9"
+        },
+        "messageDelay": 180000
+    },
+    {
+        "participantInfo": {
+            "name": "usr10"
+        },
+        "messageDelay": 240000
+    },
+    {
+        "participantInfo": {
+            "name": "usr11"
+        },
+        "messageDelay": 300000
+    }
+]

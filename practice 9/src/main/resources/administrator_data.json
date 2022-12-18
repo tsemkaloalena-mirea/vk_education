@@ -1,0 +1,26 @@
+[
+    {
+        "maxModeratorsNumber": 2,
+        "maxUsersNumber": 2,
+        "participantInfo": {
+            "name": "adm1",
+            "clanId": 1
+        }
+    },
+    {
+        "maxModeratorsNumber": 2,
+        "maxUsersNumber": 2,
+        "participantInfo": {
+            "name": "adm2",
+            "clanId": 1
+        }
+    },
+    {
+        "maxModeratorsNumber": 3,
+        "maxUsersNumber": 15,
+        "participantInfo": {
+            "name": "adm3",
+            "clanId": 2
+        }
+    }
+]
