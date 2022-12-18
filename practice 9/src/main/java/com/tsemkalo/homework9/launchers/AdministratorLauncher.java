@@ -1,47 +1,45 @@
 package com.tsemkalo.homework9.launchers;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.tsemkalo.homework9.info.ParticipantInfo;
+import com.tsemkalo.homework9.info.AdministratorDto;
 import com.tsemkalo.homework9.verticles.Administrator;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
 public final class AdministratorLauncher {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        Path filePath = Paths.get(AdministratorLauncher.class.getResource("/application_data.json").toURI());
-        try (Reader reader = Files.newBufferedReader(filePath)) {
-            JsonObject tree = new Gson().fromJson(reader, JsonObject.class);
-            JsonArray admins = tree.get("admins").getAsJsonArray();
-            for (JsonElement element : admins) {
-                JsonObject info = element.getAsJsonObject();
-
-                JsonObject clanData = new JsonObject();
-                clanData.addProperty("maxUsersNumber", info.get("maxUsersNumber").getAsInt());
-                clanData.addProperty("maxModeratorsNumber", info.get("maxModeratorsNumber").getAsInt());
-                ParticipantInfo participantInfo = new ParticipantInfo(info.get("name").getAsString());
-                participantInfo.setClanId(info.get("clanId").getAsLong());
-                run(participantInfo, clanData);
+        List<AdministratorDto> administrators = JSONReader.<AdministratorDto>readParticipants("/administrator_data.json", AdministratorDto[].class);
+        if (administrators == null) {
+            System.out.println("Can not read administrators from file");
+            return;
+        }
+        for (AdministratorDto administratorDto : administrators) {
+            if (administratorDto.getMaxModeratorsNumber() == null ||
+                    administratorDto.getMaxUsersNumber() == null ||
+                    administratorDto.getParticipantInfo().getName() == null ||
+                    administratorDto.getParticipantInfo().getClanId() == null
+            ) {
+                System.out.println("Administrator doesn't have enough data");
+            } else {
+                run(administratorDto);
             }
         }
     }
 
-    public static void run(ParticipantInfo info, JsonObject clanData) {
+    public static void run(AdministratorDto administratorDto) {
         Vertx.clusteredVertx(
                 new VertxOptions(),
                 vertxResult -> {
                     Vertx vertx = vertxResult.result();
-                    Administrator.Factory<Administrator> factory = new Administrator.Factory<>(Administrator.class, info, clanData);
+                    if (vertx == null) {
+                        System.out.println("Administrator deploy was failed");
+                        return;
+                    }
+                    Administrator.Factory factory = new Administrator.Factory(administratorDto.getParticipantInfo(), administratorDto.getMaxModeratorsNumber(), administratorDto.getMaxUsersNumber());
                     vertx.registerVerticleFactory(factory);
                     DeploymentOptions options = new DeploymentOptions().setWorker(true);
                     vertx.deployVerticle(

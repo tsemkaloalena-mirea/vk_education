@@ -1,12 +1,15 @@
 package com.tsemkalo.homework9.verticles;
 
-import com.google.gson.JsonObject;
 import com.tsemkalo.homework9.info.ClanInfo;
 import com.tsemkalo.homework9.info.ParticipantInfo;
+import io.vertx.core.Promise;
+import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
+import io.vertx.core.impl.JavaVerticleFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static com.tsemkalo.homework9.verticles.Names.ADD_MODERATOR;
 import static com.tsemkalo.homework9.verticles.Names.ADMIN_IS_SET;
@@ -18,11 +21,13 @@ import static com.tsemkalo.homework9.verticles.Names.TOO_MANY_USERS;
 import static com.tsemkalo.homework9.verticles.Names.TURN_OFF_ADMIN;
 
 public final class Administrator extends Participant {
-    private final JsonObject clanData;
+    private final Integer maxModeratorsNumber;
+    private final Integer maxUsersNumber;
 
-    public Administrator(ParticipantInfo participantInfo, JsonObject clanData) {
+    public Administrator(ParticipantInfo participantInfo, Integer maxModeratorsNumber, Integer maxUsersNumber) {
         super(participantInfo);
-        this.clanData = clanData;
+        this.maxModeratorsNumber = maxModeratorsNumber;
+        this.maxUsersNumber = maxUsersNumber;
     }
 
     @Override
@@ -50,8 +55,6 @@ public final class Administrator extends Participant {
                 vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                         map.result().get(getParticipantInfo().getClanId(), getResult -> {
                             ClanInfo clanInfo = getResult.result();
-                            int maxUsersNumber = clanData.get("maxUsersNumber").getAsInt();
-                            int maxModeratorsNumber = clanData.get("maxModeratorsNumber").getAsInt();
                             clanInfo.setMaxUsersNumber(maxUsersNumber);
                             clanInfo.setMaxModeratorsNumber(maxModeratorsNumber);
                             clanInfo.setIsActive(true);
@@ -122,5 +125,29 @@ public final class Administrator extends Participant {
                         });
                     }));
         });
+    }
+
+    public static final class Factory extends JavaVerticleFactory {
+        private final ParticipantInfo participantInfo;
+        private final Integer maxModeratorsNumber;
+        private final Integer maxUsersNumber;
+
+        public Factory(ParticipantInfo participantInfo, Integer maxModeratorsNumber, Integer maxUsersNumber) {
+            this.participantInfo = participantInfo;
+            this.maxModeratorsNumber = maxModeratorsNumber;
+            this.maxUsersNumber = maxUsersNumber;
+        }
+
+        @Override
+        public String prefix() {
+            return "clan_game";
+        }
+
+        @Override
+        public void createVerticle(String verticleName,
+                                   ClassLoader classLoader,
+                                   Promise<Callable<Verticle>> promise) {
+            promise.complete(() -> new Administrator(participantInfo, maxModeratorsNumber, maxUsersNumber));
+        }
     }
 }

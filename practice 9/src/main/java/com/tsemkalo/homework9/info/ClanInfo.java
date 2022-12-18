@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public final class ClanInfo implements Serializable {
+public final class ClanInfo implements Serializable, DTO {
     private Long id;
     private int maxUsersNumber;
     private int maxModeratorsNumber;
@@ -22,7 +22,7 @@ public final class ClanInfo implements Serializable {
         maxModeratorsNumber = 0;
         users = new ArrayList<>();
         moderators = new ArrayList<>();
-        administratorId = -1L;
+        administratorId = null;
         isActive = false;
     }
 }

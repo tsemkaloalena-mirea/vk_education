@@ -40,39 +40,4 @@ abstract public class Participant extends AbstractVerticle {
                 map.result().put(getParticipantInfo().getId(), getParticipantInfo())
         );
     }
-
-    public static final class Factory<T extends Verticle> extends JavaVerticleFactory {
-        private static Long number = 0L;
-        private final Class<T> className;
-        private final ParticipantInfo participantInfo;
-        private JsonObject additionalInfo;
-
-        public Factory(Class<T> className, ParticipantInfo participantInfo) {
-            this.className = className;
-            this.participantInfo = participantInfo;
-            participantInfo.setId(++number);
-            this.additionalInfo = null;
-        }
-
-        public Factory(Class<T> className, ParticipantInfo participantInfo, JsonObject clanData) {
-            this(className, participantInfo);
-            this.additionalInfo = clanData;
-        }
-
-        @Override
-        public String prefix() {
-            return "clan_game";
-        }
-
-        @Override
-        public void createVerticle(String verticleName,
-                                   ClassLoader classLoader,
-                                   Promise<Callable<Verticle>> promise) {
-            if (additionalInfo == null) {
-                promise.complete(() -> className.getConstructor(ParticipantInfo.class).newInstance(participantInfo));
-            } else {
-                promise.complete(() -> className.getConstructor(ParticipantInfo.class, JsonObject.class).newInstance(participantInfo, additionalInfo));
-            }
-        }
-    }
 }

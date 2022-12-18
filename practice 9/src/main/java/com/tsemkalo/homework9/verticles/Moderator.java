@@ -2,9 +2,13 @@ package com.tsemkalo.homework9.verticles;
 
 import com.tsemkalo.homework9.info.ClanInfo;
 import com.tsemkalo.homework9.info.ParticipantInfo;
+import io.vertx.core.Promise;
+import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
+import io.vertx.core.impl.JavaVerticleFactory;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static com.tsemkalo.homework9.verticles.Names.ADD_MODERATOR;
 import static com.tsemkalo.homework9.verticles.Names.ADMIN_IS_SET;
@@ -21,7 +25,7 @@ public final class Moderator extends Participant {
     public void subscribe() {
         vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
                 map.result().entries(clans -> {
-                    if (clans.result().containsKey(getParticipantInfo().getClanId()) && !clans.result().get(getParticipantInfo().getClanId()).getAdministratorId().equals(-1L)) {
+                    if (clans.result().containsKey(getParticipantInfo().getClanId()) && clans.result().get(getParticipantInfo().getClanId()).getAdministratorId() != null) {
                         joinClan();
                     } else {
                         vertx.eventBus().consumer(ADMIN_IS_SET + getParticipantInfo().getClanId(), event -> joinClan());
@@ -49,8 +53,8 @@ public final class Moderator extends Participant {
             consumer.pause();
             Long userId = event.body();
             vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map -> {
-                map.result().entries(clans -> {
-                    ClanInfo clanInfo = clans.result().get(getParticipantInfo().getClanId());
+                map.result().get(getParticipantInfo().getClanId(), clan -> {
+                    ClanInfo clanInfo = clan.result();
                     if (clanInfo.getIsActive() && clanInfo.getUsers().size() < clanInfo.getMaxUsersNumber()) {
                         List<Long> userIds = clanInfo.getUsers();
                         userIds.add(userId);
@@ -67,5 +71,25 @@ public final class Moderator extends Participant {
                 });
             });
         });
+    }
+
+    public static final class Factory extends JavaVerticleFactory {
+        private final ParticipantInfo participantInfo;
+
+        public Factory(ParticipantInfo participantInfo) {
+            this.participantInfo = participantInfo;
+        }
+
+        @Override
+        public String prefix() {
+            return "clan_game";
+        }
+
+        @Override
+        public void createVerticle(String verticleName,
+                                   ClassLoader classLoader,
+                                   Promise<Callable<Verticle>> promise) {
+            promise.complete(() -> new Moderator(participantInfo));
+        }
     }
 }

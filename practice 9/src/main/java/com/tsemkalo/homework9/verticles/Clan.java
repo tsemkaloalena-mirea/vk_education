@@ -51,7 +51,7 @@ public final class Clan extends AbstractVerticle implements Serializable {
             vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map -> {
                 map.result().get(this.id, getResult -> {
                     ClanInfo clanInfo = getResult.result();
-                    if (!clanInfo.getAdministratorId().equals(-1L)) {
+                    if (clanInfo.getAdministratorId() != null) {
                         consumer.resume();
                         event.fail(-1, " (#" + adminId + "): Clan " + this.id + " already has admin");
                     } else {

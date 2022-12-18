@@ -1,11 +1,14 @@
 package com.tsemkalo.homework9.verticles;
 
-import com.google.gson.JsonObject;
 import com.tsemkalo.homework9.info.ClanInfo;
 import com.tsemkalo.homework9.info.ParticipantInfo;
+import io.vertx.core.Promise;
+import io.vertx.core.Verticle;
 import io.vertx.core.eventbus.MessageConsumer;
+import io.vertx.core.impl.JavaVerticleFactory;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.tsemkalo.homework9.verticles.Names.CLAN_MAP;
@@ -18,9 +21,9 @@ public final class User extends Participant {
     private final Long messageDelay;
     private Long messageTimer;
 
-    public User(ParticipantInfo participantInfo, JsonObject additionalInfo) {
+    public User(ParticipantInfo participantInfo, Long messageDelay) {
         super(participantInfo);
-        this.messageDelay = additionalInfo.get("messageDelay").getAsLong();
+        this.messageDelay = messageDelay;
     }
 
     @Override
@@ -33,45 +36,48 @@ public final class User extends Participant {
 
     private void joinClan() {
         System.out.println(getParticipantInfo().getName() + " wants to join some clan");
-        vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
+        vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map -> {
+            if (map.result() != null) {
                 map.result().entries(clans -> {
-                    if (clans.result().isEmpty()) {
-                        System.out.println("There are no clans");
-                        return;
+                    if (clans != null && !clans.result().isEmpty()) {
+                        List<ClanInfo> clanInfoList = clans.result().values().stream().filter(ClanInfo::getIsActive).toList();
+                        if (clanInfoList.size() > 0) {
+                            Long clanId = clanInfoList.get(ThreadLocalRandom.current().nextInt(clanInfoList.size())).getId();
+                            sendJoinRequest(clanId);
+                            return;
+                        }
                     }
-                    List<ClanInfo> clanInfoList = clans.result().values().stream().filter(ClanInfo::getIsActive).toList();
-                    if (clanInfoList.size() > 0) {
-                        Long clanId = clanInfoList.get(ThreadLocalRandom.current().nextInt(clanInfoList.size())).getId();
-                        sendJoinRequest(clanId);
-                    }
-                })
-        );
+                    System.out.println("There are no clans");
+                });
+            } else {
+                System.out.println("There are no clans");
+            }
+        });
     }
 
     private void sendJoinRequest(Long clanId) {
-        System.out.println("User " + getParticipantInfo().getName() + " is trying to join clan " + clanId + "...");
-        vertx.eventBus().request(JOIN_REQUEST + clanId, getParticipantInfo().getId(), reply -> {
-            if (reply.succeeded()) {
-                System.out.println(getParticipantInfo().getName() + reply.result().body());
-                getParticipantInfo().setClanId(clanId);
-                putParticipantToMap();
-                printClansUsers();
-                if (messageTimer != null) {
-                    vertx.cancelTimer(messageTimer);
+        if (getParticipantInfo().getClanId() == null) {
+            System.out.println("User " + getParticipantInfo().getName() + " is trying to join clan " + clanId + "...");
+            vertx.eventBus().request(JOIN_REQUEST + clanId, getParticipantInfo().getId(), reply -> {
+                if (reply.succeeded()) {
+                    System.out.println(getParticipantInfo().getName() + reply.result().body());
+                    getParticipantInfo().setClanId(clanId);
+                    putParticipantToMap();
+                    printClansUsers();
+                    messageTimer = sendMessageToRandomUser();
+                    handleIfReconnectNeeded();
+                } else {
+                    System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
+                    System.out.println(getParticipantInfo().getName() + ", your join request will be repeated in 5 seconds");
+                    vertx.setPeriodic(5_000L, timer -> {
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            sendJoinRequest(clanId);
+                            vertx.cancelTimer(timer);
+                        }
+                    });
                 }
-                messageTimer = sendMessageToRandomUser();
-                handleIfReconnectNeeded();
-            } else {
-                System.out.println("Access denied for " + getParticipantInfo().getName() + reply.cause().getMessage());
-                System.out.println(getParticipantInfo().getName() + ", your join request will be repeated in 5 seconds");
-                vertx.setPeriodic(5_000L, timer -> {
-                    if (ThreadLocalRandom.current().nextBoolean()) {
-                        sendJoinRequest(clanId);
-                        vertx.cancelTimer(timer);
-                    }
-                });
-            }
-        });
+            });
+        }
     }
 
     private Long sendMessageToRandomUser() {
@@ -93,10 +99,14 @@ public final class User extends Participant {
     private void handleIfReconnectNeeded() {
         MessageConsumer<Object> consumer = vertx.eventBus().consumer(NEED_TO_RECONNECT + getParticipantInfo().getClanId());
         consumer.handler(event -> {
+            consumer.pause();
             vertx.sharedData().<Long, ParticipantInfo>getAsyncMap(PARTICIPANTS_MAP, map -> {
                 map.result().remove(getParticipantInfo().getId(), complete -> {
                     System.out.println("User " + getParticipantInfo().getName() + " is unconnected from clan " + getParticipantInfo().getClanId());
-                    consumer.pause();
+                    if (messageTimer != null) {
+                        vertx.cancelTimer(messageTimer);
+                    }
+                    getParticipantInfo().setClanId(null);
                     joinClan();
                 });
             });
@@ -113,5 +123,27 @@ public final class User extends Participant {
                 System.out.println("__________________________________________");
             });
         });
+    }
+
+    public static final class Factory extends JavaVerticleFactory {
+        private final ParticipantInfo participantInfo;
+        private final Long messageDelay;
+
+        public Factory(ParticipantInfo participantInfo, Long messageDelay) {
+            this.participantInfo = participantInfo;
+            this.messageDelay = messageDelay;
+        }
+
+        @Override
+        public String prefix() {
+            return "clan_game";
+        }
+
+        @Override
+        public void createVerticle(String verticleName,
+                                   ClassLoader classLoader,
+                                   Promise<Callable<Verticle>> promise) {
+            promise.complete(() -> new User(participantInfo, messageDelay));
+        }
     }
 }

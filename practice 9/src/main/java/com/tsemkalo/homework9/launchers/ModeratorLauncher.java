@@ -1,9 +1,5 @@
 package com.tsemkalo.homework9.launchers;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.tsemkalo.homework9.info.ParticipantInfo;
 import com.tsemkalo.homework9.verticles.Moderator;
 import io.vertx.core.DeploymentOptions;
@@ -11,22 +7,20 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
 public final class ModeratorLauncher {
     public static void main(String[] args) throws URISyntaxException, IOException {
-        Path filePath = Paths.get(ModeratorLauncher.class.getResource("/application_data.json").toURI());
-        try (Reader reader = Files.newBufferedReader(filePath)) {
-            JsonObject tree = new Gson().fromJson(reader, JsonObject.class);
-            JsonArray moderators = tree.get("moderators").getAsJsonArray();
-            for (JsonElement element : moderators) {
-                JsonObject info = element.getAsJsonObject();
-                ParticipantInfo participantInfo = new ParticipantInfo(info.get("name").getAsString());
-                participantInfo.setClanId(info.get("clanId").getAsLong());
+        List<ParticipantInfo> moderators = JSONReader.<ParticipantInfo>readParticipants("/moderator_data.json", ParticipantInfo[].class);
+        if (moderators == null) {
+            System.out.println("Can not read moderators from file");
+            return;
+        }
+        for (ParticipantInfo participantInfo : moderators) {
+            if (participantInfo.getName() == null || participantInfo.getClanId() == null) {
+                System.out.println("Moderator doesn't have enough data");
+            } else {
                 run(participantInfo);
             }
         }
@@ -37,7 +31,11 @@ public final class ModeratorLauncher {
                 new VertxOptions(),
                 vertxResult -> {
                     Vertx vertx = vertxResult.result();
-                    Moderator.Factory<Moderator> factory = new Moderator.Factory<>(Moderator.class, info);
+                    if (vertx == null) {
+                        System.out.println("Moderator deploy was failed");
+                        return;
+                    }
+                    Moderator.Factory factory = new Moderator.Factory(info);
                     vertx.registerVerticleFactory(factory);
                     DeploymentOptions options = new DeploymentOptions().setWorker(true);
                     vertx.deployVerticle(

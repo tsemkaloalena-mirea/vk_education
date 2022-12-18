@@ -5,14 +5,17 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public final class ParticipantInfo implements Serializable {
+public final class ParticipantInfo implements Serializable, DTO {
     private Long id;
     private String name;
     private Long clanId;
 
     public ParticipantInfo(String name) {
-        this.id = -1L;
+        this.id = null;
         this.name = name;
-        this.clanId = -1L;
+        this.clanId = null;
     }
+//    public void setId(Long id) {
+//        if (id == null)
+//    }
 }
