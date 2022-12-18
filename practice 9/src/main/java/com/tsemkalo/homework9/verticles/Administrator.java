@@ -32,15 +32,15 @@ public final class Administrator extends Participant {
 
     @Override
     public void subscribe() {
-        vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map ->
-                map.result().entries(clans -> {
-                    if (clans.result().containsKey(getParticipantInfo().getClanId())) {
-                        joinClan();
-                    } else {
-                        vertx.eventBus().consumer(CLAN_CREATED + getParticipantInfo().getClanId(), event -> joinClan());
-                    }
-                })
-        );
+        vertx.sharedData().<Long, ClanInfo>getAsyncMap(CLAN_MAP, map -> {
+            map.result().entries(clans -> {
+                if (clans.result() != null && clans.result().containsKey(getParticipantInfo().getClanId())) {
+                    joinClan();
+                } else {
+                    vertx.eventBus().consumer(CLAN_CREATED + getParticipantInfo().getClanId(), event -> joinClan());
+                }
+            });
+        });
         addModerators();
         handleIfTooManyUsers();
         handleIfBecomeOffline();

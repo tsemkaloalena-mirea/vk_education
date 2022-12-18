@@ -21,13 +21,14 @@ abstract public class Participant extends AbstractVerticle {
     }
 
     @Override
-    public void start() {
+    public void start(Promise<Void> startPromise) {
         vertx.sharedData().getCounter("participantNumber", counter -> {
             if (counter.succeeded()) {
                 counter.result().incrementAndGet(number -> {
                     getParticipantInfo().setId(number.result());
                     System.out.println(getClass().getSimpleName() + " " + getParticipantInfo().getName() + " is added and has id " + getParticipantInfo().getId());
                     subscribe();
+                    startPromise.complete();
                 });
             }
         });
