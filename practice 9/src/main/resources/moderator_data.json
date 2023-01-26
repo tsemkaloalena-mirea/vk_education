@@ -1,0 +1,26 @@
+[
+    {
+        "name": "moderator1",
+        "clanId": 1
+    },
+    {
+        "name": "moderator2",
+        "clanId": 1
+    },
+    {
+        "name": "moderator3",
+        "clanId": 1
+    },
+    {
+        "name": "moderator4",
+        "clanId": 1
+    },
+    {
+        "name": "moderator5",
+        "clanId": 2
+    },
+    {
+        "name": "moderator6",
+        "clanId": 2
+    }
+]
